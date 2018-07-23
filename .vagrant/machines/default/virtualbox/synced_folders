@@ -1,1 +1,0 @@
-{"virtualbox":{"/vagrant/www":{"guestpath":"/vagrant/www","hostpath":"D:/HobbyApp/vagrant/www","disabled":false,"__vagrantfile":true},"/vagrant/sites-enabled":{"guestpath":"/vagrant/sites-enabled","hostpath":"D:/HobbyApp/vagrant/sites-enabled","disabled":false,"__vagrantfile":true}}}
