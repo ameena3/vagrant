@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { BookingTable } from "@/components/BookingTable";
 import { api } from "@/lib/api";
 import { Order } from "@/types";
-import { formatDate, getWeekStart } from "@/lib/utils";
+import { formatDate, getWeekStart, localDateStr } from "@/lib/utils";
 import { Download } from "lucide-react";
 
 export default function BookingsPage() {
@@ -25,7 +25,7 @@ export default function BookingsPage() {
   const weeks = Array.from({ length: 8 }, (_, i) => {
     const date = new Date(currentWeekStart);
     date.setDate(date.getDate() - (3 - i) * 7);
-    const weekStart = date.toISOString().split("T")[0];
+    const weekStart = localDateStr(date);
     return {
       label: `Week of ${formatDate(weekStart)}`,
       value: weekStart,

@@ -24,7 +24,7 @@ import { WeekView } from "@/components/WeekView";
 import { DayMenu } from "@/components/DayMenu";
 import { OrderSummary } from "@/components/OrderSummary";
 import { AnnouncementBanner } from "@/components/AnnouncementBanner";
-import { getWeekStart, getWeekDates, DAY_NAMES } from "@/lib/utils";
+import { getWeekStart, getWeekDates, DAY_NAMES, localDateStr } from "@/lib/utils";
 import { api } from "@/lib/api";
 import type {
   DayMenu as DayMenuType,
@@ -104,7 +104,7 @@ export default function HomePage() {
   function navigateWeek(direction: number) {
     const d = new Date(weekStart + "T00:00:00");
     d.setDate(d.getDate() + direction * 7);
-    setWeekStart(d.toISOString().split("T")[0]);
+    setWeekStart(localDateStr(d));
   }
 
   function addToCart(item: OrderItem) {
@@ -314,7 +314,7 @@ export default function HomePage() {
             menu={selectedMenu}
             loading={loading}
             onAddToCart={addToCart}
-            date={selectedDate.toISOString().split("T")[0]}
+            date={localDateStr(selectedDate)}
           />
         </div>
       </div>

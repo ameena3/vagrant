@@ -12,6 +12,7 @@ import {
   formatDate,
   getWeekStart,
   getWeekDates,
+  localDateStr,
 } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -43,13 +44,13 @@ export default function MenuManagement() {
   const handlePrevWeek = () => {
     const date = new Date(weekStart);
     date.setDate(date.getDate() - 7);
-    setWeekStart(date.toISOString().split("T")[0]);
+    setWeekStart(localDateStr(date));
   };
 
   const handleNextWeek = () => {
     const date = new Date(weekStart);
     date.setDate(date.getDate() + 7);
-    setWeekStart(date.toISOString().split("T")[0]);
+    setWeekStart(localDateStr(date));
   };
 
   const getMenuForDay = (dayOfWeek: number): DayMenu | null => {
@@ -139,7 +140,7 @@ export default function MenuManagement() {
               {DAY_NAMES.map((day, idx) => {
                 const menu = getMenuForDay(idx);
                 const date = weekDates[idx];
-                const dateStr = date.toISOString().split("T")[0];
+                const dateStr = localDateStr(date);
 
                 return (
                   <TabsContent key={idx} value={idx.toString()}>

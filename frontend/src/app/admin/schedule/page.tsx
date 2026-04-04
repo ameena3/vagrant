@@ -21,6 +21,7 @@ import {
   formatDate,
   getWeekStart,
   getWeekDates,
+  localDateStr,
   cn,
 } from "@/lib/utils";
 import { api } from "@/lib/api";
@@ -140,13 +141,13 @@ export default function SchedulePage() {
   const previousWeek = () => {
     const date = new Date(weekStart);
     date.setDate(date.getDate() - 7);
-    setWeekStart(date.toISOString().split("T")[0]);
+    setWeekStart(localDateStr(date));
   };
 
   const nextWeek = () => {
     const date = new Date(weekStart);
     date.setDate(date.getDate() + 7);
-    setWeekStart(date.toISOString().split("T")[0]);
+    setWeekStart(localDateStr(date));
   };
 
   return (

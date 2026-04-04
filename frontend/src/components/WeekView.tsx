@@ -2,8 +2,7 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { DAY_NAMES, getWeekDates } from "@/lib/utils";
+import { cn, localDateStr, getWeekDates, DAY_NAMES } from "@/lib/utils";
 import type { WeekSchedule } from "@/types";
 
 interface WeekViewProps {
@@ -61,15 +60,14 @@ export function WeekView({
       {/* Days Grid */}
       <div className="grid grid-cols-7 gap-2 px-2">
         {dates.map((date, dayIndex) => {
-          const dateStr = date.toISOString().split("T")[0];
+          const dateStr = localDateStr(date);
           const scheduleDay = schedule?.days?.find(
             (d) => d.day_of_week === dayIndex
           );
           const isBlocked = scheduleDay?.blocked || false;
           const isWeekend = dayIndex === 0 || dayIndex === 6;
           const isWeekendDisabled = isWeekend && !schedule?.weekends_enabled;
-          const isToday =
-            dateStr === today.toISOString().split("T")[0];
+          const isToday = dateStr === localDateStr(today);
           const isSelected = selectedDay === dayIndex;
           const isDisabled = isBlocked || isWeekendDisabled;
 

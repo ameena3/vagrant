@@ -20,15 +20,15 @@ import { Label } from "@/components/ui/label";
 import { AnalyticsCards } from "@/components/AnalyticsCards";
 import { api } from "@/lib/api";
 import { AnalyticsSummary, OrderTrend, PopularItem } from "@/types";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatCurrency, formatDate, localDateStr } from "@/lib/utils";
 
 function getMonthStart() {
   const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0];
+  return localDateStr(new Date(now.getFullYear(), now.getMonth(), 1));
 }
 
 function getToday() {
-  return new Date().toISOString().split("T")[0];
+  return localDateStr(new Date());
 }
 
 export default function AdminDashboard() {

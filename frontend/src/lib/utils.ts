@@ -5,8 +5,19 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/** Format a Date as YYYY-MM-DD using LOCAL time (avoids UTC midnight shift). */
+export function localDateStr(date: Date): string {
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0"),
+  ].join("-");
+}
+
 export function formatDate(date: string | Date): string {
-  return new Date(date).toLocaleDateString("en-US", {
+  // Parse YYYY-MM-DD strings at noon local time to avoid UTC-midnight day-shift.
+  const d = typeof date === "string" ? new Date(date + "T12:00:00") : date;
+  return d.toLocaleDateString("en-US", {
     weekday: "short",
     month: "short",
     day: "numeric",
@@ -22,9 +33,8 @@ export function formatCurrency(amount: number): string {
 
 export function getWeekStart(date: Date = new Date()): string {
   const d = new Date(date);
-  const day = d.getDay();
-  d.setDate(d.getDate() - day);
-  return d.toISOString().split("T")[0];
+  d.setDate(d.getDate() - d.getDay());
+  return localDateStr(d); // local date string, not UTC
 }
 
 export function getWeekDates(weekStart: string): Date[] {
