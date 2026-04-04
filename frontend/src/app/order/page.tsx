@@ -46,14 +46,15 @@ function OrderPageContent() {
   }, [orderId]);
 
   async function loadOrder() {
+    if (!orderId) return;
     setLoading(true);
     try {
-      // Note: This would need a getOrder API method
-      // For now, we'll just set order as null if we can't fetch
-      setLoading(false);
+      const orderData = await api.getOrder(orderId);
+      setOrder(orderData);
     } catch (err) {
       console.error("Failed to load order:", err);
       setError("Failed to load order details");
+    } finally {
       setLoading(false);
     }
   }
@@ -76,7 +77,7 @@ function OrderPageContent() {
         const result = await api.checkout(order.id);
         if (result?.checkout_url) {
           window.location.href = result.checkout_url;
-        } else if (result?.stripe_disabled) {
+        } else if (!result?.checkout_url) {
           // If Stripe is disabled, redirect to success page
           router.push(`/order/success?orderId=${order.id}`);
         } else {
@@ -94,7 +95,7 @@ function OrderPageContent() {
           const result = await api.checkout(newOrder.id);
           if (result?.checkout_url) {
             window.location.href = result.checkout_url;
-          } else if (result?.stripe_disabled) {
+          } else if (!result?.checkout_url) {
             router.push(`/order/success?orderId=${newOrder.id}`);
           } else {
             setError("Failed to initiate checkout");
@@ -122,7 +123,7 @@ function OrderPageContent() {
   }
 
   const displayItems = order?.items || items;
-  const totalAmount = displayItems.reduce((sum, item) => sum + item.price, 0);
+  const totalAmount = order ? order.total_amount : displayItems.reduce((sum, item) => sum + item.price, 0);
 
   if (loading) {
     return (

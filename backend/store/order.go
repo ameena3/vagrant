@@ -38,10 +38,14 @@ type OrderTrendResult struct {
 	Revenue    float64 `bson:"revenue" json:"revenue"`
 }
 
+type popularItemID struct {
+	Name     string `bson:"name"`
+	MealType string `bson:"meal_type"`
+}
+
 type PopularItemResult struct {
-	Name       string `bson:"_id.name" json:"name"`
-	MealType   string `bson:"_id.meal_type" json:"meal_type"`
-	OrderCount int    `bson:"order_count" json:"order_count"`
+	ID         popularItemID `bson:"_id"`
+	OrderCount int           `bson:"order_count"`
 }
 
 type OrderStore struct {

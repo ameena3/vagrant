@@ -25,7 +25,7 @@ func NewAdmin(s *store.Store) admin.Service {
 func (s *adminsrvc) ListAdmins(ctx context.Context, p *admin.ListAdminsPayload) (res []*admin.User, err error) {
 	log.Printf(ctx, "admin.listAdmins")
 
-	admins, err := s.store.User.GetAdmins(ctx)
+	admins, err := s.store.User.GetAll(ctx)
 	if err != nil {
 		log.Printf(ctx, "Error fetching admins: %v", err)
 		return nil, err

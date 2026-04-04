@@ -107,7 +107,7 @@ func (s *analyticssrvc) OrderTrends(ctx context.Context, p *analytics.OrderTrend
 			log.Printf(ctx, "Error parsing to date: %v", err)
 			return nil, err
 		}
-		toTime = t
+		toTime = t.AddDate(0, 0, 1)
 	} else {
 		toTime = time.Now()
 	}
@@ -166,8 +166,8 @@ func convertStorePopularItemToGoaPopularItem(item *store.PopularItemResult) *ana
 
 	orderCount := item.OrderCount
 	return &analytics.PopularItem{
-		Name:       &item.Name,
-		MealType:   &item.MealType,
+		Name:       &item.ID.Name,
+		MealType:   &item.ID.MealType,
 		OrderCount: &orderCount,
 	}
 }
