@@ -225,3 +225,32 @@ func (o *OrderStore) GetPopularItems(ctx context.Context, limit int) ([]PopularI
 	}
 	return items, nil
 }
+
+func (o *OrderStore) Delete(ctx context.Context, id string) error {
+	objID, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+	_, err = o.col.DeleteOne(ctx, bson.M{"_id": objID})
+	return err
+}
+
+func (o *OrderStore) UpdateFull(ctx context.Context, id string, customerName, customerEmail, weekStart, status string, items []OrderItem, totalAmount float64) (*Order, error) {
+	objID, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+	update := bson.M{"$set": bson.M{
+		"customer_name":  customerName,
+		"customer_email": customerEmail,
+		"week_start":     weekStart,
+		"status":         status,
+		"items":          items,
+		"total_amount":   totalAmount,
+	}}
+	_, err = o.col.UpdateOne(ctx, bson.M{"_id": objID}, update)
+	if err != nil {
+		return nil, err
+	}
+	return o.GetByID(ctx, id)
+}

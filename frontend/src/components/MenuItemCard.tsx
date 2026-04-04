@@ -13,6 +13,7 @@ interface MenuItemCardProps {
   date: string;
   dayOfWeek: number;
   onAddToCart: (item: OrderItem) => void;
+  hidePrices?: boolean;
 }
 
 export function MenuItemCard({
@@ -21,6 +22,7 @@ export function MenuItemCard({
   date,
   dayOfWeek,
   onAddToCart,
+  hidePrices,
 }: MenuItemCardProps) {
   function handleAdd() {
     onAddToCart({
@@ -75,9 +77,11 @@ export function MenuItemCard({
 
         {/* Footer */}
         <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-          <span className="text-lg font-bold text-green-600">
-            {formatCurrency(item.price)}
-          </span>
+          {!hidePrices && (
+            <span className="text-lg font-bold text-green-600">
+              {formatCurrency(item.price)}
+            </span>
+          )}
           <Button
             size="sm"
             className="bg-orange-500 hover:bg-orange-600 text-white"

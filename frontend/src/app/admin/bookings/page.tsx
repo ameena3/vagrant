@@ -10,9 +10,10 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { BookingTable } from "@/components/BookingTable";
+import { BookingForm } from "@/components/BookingForm";
 import { api } from "@/lib/api";
 import { Order } from "@/types";
-import { Download } from "lucide-react";
+import { Download, Plus } from "lucide-react";
 
 function getMonthOptions() {
   const options: { value: string; label: string }[] = [];
@@ -35,6 +36,8 @@ export default function BookingsPage() {
   const [allOrders, setAllOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedMonth, setSelectedMonth] = useState(currentMonth());
+  const [formOpen, setFormOpen] = useState(false);
+  const [editingOrder, setEditingOrder] = useState<Order | null>(null);
 
   const months = useMemo(() => getMonthOptions(), []);
 
@@ -100,6 +103,43 @@ export default function BookingsPage() {
     document.body.removeChild(a);
   };
 
+  async function handleFormSubmit(data: {
+    customer_name: string;
+    customer_email: string;
+    week_start: string;
+    status: string;
+    items: Array<{
+      date: string;
+      day_of_week: number;
+      meal_type: string;
+      menu_item_name: string;
+      price: number;
+      comment?: string;
+    }>;
+  }) {
+    try {
+      if (editingOrder) {
+        await api.updateOrder(editingOrder.id, data);
+      } else {
+        await api.adminCreateOrder(data);
+      }
+      await fetchOrders();
+      setEditingOrder(null);
+    } catch (error) {
+      console.error("Failed to save booking:", error);
+      throw error;
+    }
+  }
+
+  async function handleDeleteOrder(order: Order) {
+    try {
+      await api.deleteOrder(order.id);
+      await fetchOrders();
+    } catch (error) {
+      console.error("Failed to delete booking:", error);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -125,14 +165,25 @@ export default function BookingsPage() {
           </Select>
         </div>
 
-        <Button
-          variant="outline"
-          onClick={handleExport}
-          disabled={orders.length === 0}
-        >
-          <Download className="w-4 h-4 mr-2" />
-          Export CSV
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => {
+              setEditingOrder(null);
+              setFormOpen(true);
+            }}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            New Booking
+          </Button>
+          <Button
+            variant="outline"
+            onClick={handleExport}
+            disabled={orders.length === 0}
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Export CSV
+          </Button>
+        </div>
       </div>
 
       <BookingTable
@@ -140,6 +191,18 @@ export default function BookingsPage() {
         loading={loading}
         onRefresh={fetchOrders}
         pageSize={50}
+        onEdit={(order) => {
+          setEditingOrder(order);
+          setFormOpen(true);
+        }}
+        onDelete={handleDeleteOrder}
+      />
+
+      <BookingForm
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        initial={editingOrder}
+        onSubmit={handleFormSubmit}
       />
     </div>
   );

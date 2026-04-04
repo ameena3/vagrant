@@ -17,6 +17,7 @@ interface OrderSummaryProps {
   onCheckout: () => void;
   loading?: boolean;
   stripeDisabled?: boolean;
+  hidePrices?: boolean;
 }
 
 export function OrderSummary({
@@ -26,6 +27,7 @@ export function OrderSummary({
   onCheckout,
   loading,
   stripeDisabled,
+  hidePrices,
 }: OrderSummaryProps) {
   const [expandedCommentIndex, setExpandedCommentIndex] = useState<number | null>(null);
 
@@ -102,9 +104,11 @@ export function OrderSummary({
 
               {/* Item Footer */}
               <div className="flex items-center justify-between border-t border-slate-200 pt-2">
-                <span className="font-semibold text-green-600">
-                  {formatCurrency(item.price)}
-                </span>
+                {!hidePrices && (
+                  <span className="font-semibold text-green-600">
+                    {formatCurrency(item.price)}
+                  </span>
+                )}
                 <button
                   onClick={() =>
                     setExpandedCommentIndex(
@@ -139,12 +143,14 @@ export function OrderSummary({
 
       <CardFooter className="flex-col gap-4 border-t border-slate-200">
         {/* Total */}
-        <div className="flex w-full items-center justify-between pt-4">
-          <span className="text-lg font-semibold text-slate-900">Total</span>
-          <span className="text-2xl font-bold text-green-600">
-            {formatCurrency(totalAmount)}
-          </span>
-        </div>
+        {!hidePrices && (
+          <div className="flex w-full items-center justify-between pt-4">
+            <span className="text-lg font-semibold text-slate-900">Total</span>
+            <span className="text-2xl font-bold text-green-600">
+              {formatCurrency(totalAmount)}
+            </span>
+          </div>
+        )}
 
         {/* Checkout Button */}
         <Button

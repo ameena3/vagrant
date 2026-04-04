@@ -12,6 +12,7 @@ interface DayMenuProps {
   loading?: boolean;
   onAddToCart: (item: OrderItem) => void;
   date: string;
+  hidePrices?: boolean;
 }
 
 export function DayMenu({
@@ -19,6 +20,7 @@ export function DayMenu({
   loading,
   onAddToCart,
   date,
+  hidePrices,
 }: DayMenuProps) {
   if (loading) {
     return (
@@ -102,6 +104,7 @@ export function DayMenu({
                     date={date}
                     dayOfWeek={menu.day_of_week}
                     onAddToCart={onAddToCart}
+                    hidePrices={hidePrices}
                   />
                 ))}
               </div>

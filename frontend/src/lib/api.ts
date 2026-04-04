@@ -122,6 +122,50 @@ export const api = {
       body: JSON.stringify({ status }),
     }),
 
+  adminCreateOrder: (data: {
+    customer_name: string;
+    customer_email: string;
+    week_start: string;
+    status: string;
+    items: Array<{
+      date: string;
+      day_of_week: number;
+      meal_type: string;
+      menu_item_name: string;
+      price: number;
+      comment?: string;
+    }>;
+  }) =>
+    fetchAPI<Order>("/admin/orders", { method: "POST", body: JSON.stringify(data) }),
+
+  updateOrder: (id: string, data: {
+    customer_name: string;
+    customer_email: string;
+    week_start: string;
+    status: string;
+    items: Array<{
+      date: string;
+      day_of_week: number;
+      meal_type: string;
+      menu_item_name: string;
+      price: number;
+      comment?: string;
+    }>;
+  }) =>
+    fetchAPI<Order>(`/admin/orders/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+
+  deleteOrder: (id: string) =>
+    fetchAPI<{ ok: boolean }>(`/admin/orders/${id}`, { method: "DELETE" }),
+
+  getPublicSettings: () =>
+    fetchAPI<{ hide_prices: boolean; weekends_enabled: boolean }>("/settings"),
+
+  toggleHidePrices: (hide_prices: boolean) =>
+    fetchAPI<{ hide_prices: boolean }>("/admin/settings/hide-prices", {
+      method: "PUT",
+      body: JSON.stringify({ hide_prices }),
+    }),
+
   getSettings: () =>
     fetchAPI<{ weekends_enabled: boolean; stripe_enabled: boolean }>("/admin/settings"),
 

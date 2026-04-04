@@ -43,6 +43,7 @@ export default function HomePage() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [cartItems, setCartItems] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hidePrices, setHidePrices] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
@@ -87,14 +88,16 @@ export default function HomePage() {
   async function loadData() {
     setLoading(true);
     try {
-      const [menuData, scheduleData, annData] = await Promise.all([
+      const [menuData, scheduleData, annData, settingsData] = await Promise.all([
         api.getWeekMenus(weekStart),
         api.getSchedule(weekStart),
         api.getAnnouncements(),
+        api.getPublicSettings(),
       ]);
       setMenus(menuData || []);
       setSchedule(scheduleData);
       setAnnouncements(annData || []);
+      setHidePrices(settingsData?.hide_prices ?? false);
     } catch (err) {
       console.error("Failed to load data:", err);
     }
@@ -234,6 +237,7 @@ export default function HomePage() {
                     onUpdateComment={updateCartItemComment}
                     onCheckout={handleCheckout}
                     loading={loading}
+                    hidePrices={hidePrices}
                   />
                 </div>
               </SheetContent>
@@ -315,6 +319,7 @@ export default function HomePage() {
             loading={loading}
             onAddToCart={addToCart}
             date={localDateStr(selectedDate)}
+            hidePrices={hidePrices}
           />
         </div>
       </div>

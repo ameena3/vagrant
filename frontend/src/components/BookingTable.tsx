@@ -24,9 +24,11 @@ interface BookingTableProps {
   loading: boolean;
   onRefresh?: () => void;
   pageSize?: number;
+  onEdit?: (order: Order) => void;
+  onDelete?: (order: Order) => void;
 }
 
-export function BookingTable({ orders, loading, onRefresh, pageSize }: BookingTableProps) {
+export function BookingTable({ orders, loading, onRefresh, pageSize, onEdit, onDelete }: BookingTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
@@ -277,6 +279,35 @@ export function BookingTable({ orders, loading, onRefresh, pageSize }: BookingTa
                                         </Button>
                                       ))}
                                   </div>
+                                </div>
+
+                                <div className="flex flex-wrap gap-2">
+                                  {onEdit && (
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        onEdit(order);
+                                      }}
+                                    >
+                                      Edit Booking
+                                    </Button>
+                                  )}
+                                  {onDelete && (
+                                    <Button
+                                      size="sm"
+                                      variant="destructive"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (window.confirm("Delete this booking? This cannot be undone.")) {
+                                          onDelete(order);
+                                        }
+                                      }}
+                                    >
+                                      Delete
+                                    </Button>
+                                  )}
                                 </div>
                               </div>
                             </div>
