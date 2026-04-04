@@ -149,7 +149,11 @@ export default function HomePage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => signIn()}
+                onClick={() =>
+                  process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === "true"
+                    ? signIn("credentials")
+                    : signIn()
+                }
                 className="gap-2"
               >
                 <LogIn className="h-4 w-4" />
