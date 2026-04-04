@@ -77,12 +77,7 @@ var _ = Service("menu", func() {
 			})
 			Required("auth_token")
 		})
-		Result(func() {
-			Attribute("image_path", String, "Path to uploaded image", func() {
-				Meta("struct:tag:json", "image_path")
-			})
-			Required("image_path")
-		})
+		Result(ImageUploadResult)
 		HTTP(func() {
 			POST("/api/admin/menus/upload")
 			Header("auth_token:Authorization")

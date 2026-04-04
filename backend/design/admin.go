@@ -13,7 +13,7 @@ var _ = Service("admin", func() {
 			})
 			Required("auth_token")
 		})
-		Result(ArrayOf(User))
+		Result(ArrayOf(UserResult))
 		HTTP(func() {
 			GET("/api/admin/users")
 			Header("auth_token:Authorization")
@@ -32,7 +32,7 @@ var _ = Service("admin", func() {
 			})
 			Required("email", "auth_token")
 		})
-		Result(User)
+		Result(UserResult)
 		HTTP(func() {
 			POST("/api/admin/users")
 			Header("auth_token:Authorization")

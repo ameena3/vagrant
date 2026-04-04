@@ -13,7 +13,7 @@ var _ = Service("analytics", func() {
 			})
 			Required("auth_token")
 		})
-		Result(AnalyticsSummary)
+		Result(AnalyticsSummaryResult)
 		HTTP(func() {
 			GET("/api/admin/analytics/summary")
 			Header("auth_token:Authorization")
@@ -35,7 +35,7 @@ var _ = Service("analytics", func() {
 			})
 			Required("auth_token")
 		})
-		Result(ArrayOf(OrderTrend))
+		Result(ArrayOf(OrderTrendRT))
 		HTTP(func() {
 			GET("/api/admin/analytics/orders")
 			Header("auth_token:Authorization")
@@ -53,7 +53,7 @@ var _ = Service("analytics", func() {
 			})
 			Required("auth_token")
 		})
-		Result(ArrayOf(PopularItem))
+		Result(ArrayOf(PopularItemRT))
 		HTTP(func() {
 			GET("/api/admin/analytics/popular-items")
 			Header("auth_token:Authorization")

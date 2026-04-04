@@ -11,7 +11,7 @@ var _ = Service("announcement", func() {
 			GET("/api/announcements")
 			Response(StatusOK)
 		})
-		Result(ArrayOf(Announcement))
+		Result(ArrayOf(AnnouncementResult))
 	})
 
 	Method("create", func() {
@@ -38,7 +38,7 @@ var _ = Service("announcement", func() {
 			})
 			Required("message", "type", "active", "start_date", "end_date", "auth_token")
 		})
-		Result(Announcement)
+		Result(AnnouncementResult)
 		HTTP(func() {
 			POST("/api/admin/announcements")
 			Header("auth_token:Authorization")
@@ -73,7 +73,7 @@ var _ = Service("announcement", func() {
 			})
 			Required("id", "message", "type", "active", "start_date", "end_date", "auth_token")
 		})
-		Result(Announcement)
+		Result(AnnouncementResult)
 		HTTP(func() {
 			PUT("/api/admin/announcements/{id}")
 			Header("auth_token:Authorization")

@@ -13,14 +13,7 @@ var _ = Service("schedule", func() {
 			})
 			Required("weekStart")
 		})
-		Result(func() {
-			Attribute("days", ArrayOf(ScheduleDay), "Schedule days", func() {
-				Meta("struct:tag:json", "days")
-			})
-			Attribute("weekends_enabled", Boolean, "Whether weekends are enabled", func() {
-				Meta("struct:tag:json", "weekends_enabled")
-			})
-		})
+		Result(WeekScheduleResult)
 		HTTP(func() {
 			GET("/api/schedule/week/{weekStart}")
 			Response(StatusOK)
@@ -44,7 +37,7 @@ var _ = Service("schedule", func() {
 			})
 			Required("date", "blocked", "auth_token")
 		})
-		Result(ScheduleDay)
+		Result(ScheduleDayResult)
 		HTTP(func() {
 			PUT("/api/admin/schedule/day")
 			Header("auth_token:Authorization")
@@ -69,7 +62,7 @@ var _ = Service("schedule", func() {
 			})
 			Required("week_start", "blocked", "auth_token")
 		})
-		Result(ArrayOf(ScheduleDay))
+		Result(ArrayOf(ScheduleDayResult))
 		HTTP(func() {
 			PUT("/api/admin/schedule/week")
 			Header("auth_token:Authorization")

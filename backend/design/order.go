@@ -11,7 +11,7 @@ var _ = Service("order", func() {
 			Attribute("week_start", String, "Week start date (YYYY-MM-DD)", func() {
 				Meta("struct:tag:json", "week_start")
 			})
-			Attribute("items", ArrayOf(OrderItem), "Order items", func() {
+			Attribute("items", ArrayOf(OrderItemType), "Order items", func() {
 				Meta("struct:tag:json", "items")
 			})
 			Attribute("auth_token", String, "Authorization token", func() {
@@ -19,7 +19,7 @@ var _ = Service("order", func() {
 			})
 			Required("week_start", "items", "auth_token")
 		})
-		Result(Order)
+		Result(OrderResult)
 		HTTP(func() {
 			POST("/api/orders")
 			Header("auth_token:Authorization")
@@ -38,7 +38,7 @@ var _ = Service("order", func() {
 			})
 			Required("id", "auth_token")
 		})
-		Result(Order)
+		Result(OrderResult)
 		HTTP(func() {
 			GET("/api/orders/{id}")
 			Header("auth_token:Authorization")
@@ -57,7 +57,7 @@ var _ = Service("order", func() {
 			})
 			Required("auth_token")
 		})
-		Result(ArrayOf(Order))
+		Result(ArrayOf(OrderResult))
 		HTTP(func() {
 			GET("/api/admin/orders")
 			Header("auth_token:Authorization")
@@ -77,7 +77,7 @@ var _ = Service("order", func() {
 			})
 			Required("order_id", "auth_token")
 		})
-		Result(CheckoutResult)
+		Result(CheckoutResultRT)
 		HTTP(func() {
 			POST("/api/orders/checkout")
 			Header("auth_token:Authorization")
