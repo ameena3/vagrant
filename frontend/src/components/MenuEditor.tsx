@@ -46,13 +46,11 @@ export function MenuEditor({
   onDelete,
 }: MenuEditorProps) {
   const { toast } = useToast();
-  const [meals, setMeals] = useState<MealSet>(
-    menu?.meals || {
-      breakfast: [],
-      lunch: [],
-      dinner: [],
-    }
-  );
+  const [meals, setMeals] = useState<MealSet>({
+    breakfast: menu?.meals?.breakfast ?? [],
+    lunch: menu?.meals?.lunch ?? [],
+    dinner: menu?.meals?.dinner ?? [],
+  });
   const [enabled, setEnabled] = useState(menu?.enabled ?? false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
