@@ -2,33 +2,30 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { CheckCircle2, Home, ArrowRight } from "lucide-react";
+import { CheckCircle2, Home } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDate } from "@/lib/utils";
+import { api } from "@/lib/api";
+import type { Order } from "@/types";
 
 function OrderSuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
-  const [orderDetails, setOrderDetails] = useState<any>(null);
+  const [order, setOrder] = useState<Order | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Here you would typically fetch order details from the API
-    // For now, we'll just show a generic success message
     if (orderId) {
-      // Simulate loading order details
-      setTimeout(() => {
-        setOrderDetails({
-          id: orderId,
-          total_amount: Math.random() * 100 + 30,
-          items_count: Math.floor(Math.random() * 5) + 1,
-          customer_name: "You",
-          created_at: new Date().toISOString(),
-        });
-      }, 500);
+      api.getOrder(orderId)
+        .then(setOrder)
+        .catch(console.error)
+        .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
     }
   }, [orderId]);
 
@@ -89,82 +86,46 @@ function OrderSuccessContent() {
                 <div>
                   <p className="text-xs text-slate-600 mb-1">Order Date</p>
                   <p className="text-sm font-medium text-slate-900">
-                    {new Date().toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
+                    {order
+                      ? formatDate(order.created_at)
+                      : new Date().toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
                   </p>
                 </div>
               </div>
 
-              {orderDetails && (
+              {!loading && order && (
                 <>
                   <Separator />
                   <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-slate-600">Items</span>
-                      <span className="font-medium text-slate-900">
-                        {orderDetails.items_count}{" "}
-                        {orderDetails.items_count === 1 ? "item" : "items"}
-                      </span>
-                    </div>
+                    {order.items.map((item, idx) => (
+                      <div key={idx} className="flex justify-between text-sm">
+                        <span className="text-slate-700">
+                          {item.menu_item_name}{" "}
+                          <span className="text-slate-500 capitalize">({item.meal_type})</span>
+                        </span>
+                        <span className="font-medium">{formatCurrency(item.price)}</span>
+                      </div>
+                    ))}
                     <div className="flex justify-between border-t border-slate-200 pt-2">
                       <span className="font-semibold text-slate-900">Total</span>
                       <span className="text-lg font-bold text-green-600">
-                        {formatCurrency(orderDetails.total_amount)}
+                        {formatCurrency(order.total_amount)}
                       </span>
                     </div>
                   </div>
                 </>
               )}
+
+              {loading && (
+                <p className="text-sm text-slate-500 text-center py-2">Loading order details...</p>
+              )}
             </CardContent>
           </Card>
         )}
-
-        {/* What's Next */}
-        <Card className="border-slate-200">
-          <CardHeader>
-            <CardTitle>What's Next?</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 text-green-700 font-semibold flex-shrink-0">
-                1
-              </div>
-              <div>
-                <p className="font-medium text-slate-900">Confirmation Email</p>
-                <p className="text-sm text-slate-600">
-                  You'll receive an email with order details and payment receipt.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 text-orange-700 font-semibold flex-shrink-0">
-                2
-              </div>
-              <div>
-                <p className="font-medium text-slate-900">Meal Preparation</p>
-                <p className="text-sm text-slate-600">
-                  We'll start preparing your fresh meals for pickup.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-700 font-semibold flex-shrink-0">
-                3
-              </div>
-              <div>
-                <p className="font-medium text-slate-900">Pickup</p>
-                <p className="text-sm text-slate-600">
-                  Your meals will be ready for pickup at your scheduled time.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Helpful Info */}
         <Card className="border-amber-200 bg-amber-50">
@@ -173,7 +134,7 @@ function OrderSuccessContent() {
               💡 Need to make changes?
             </p>
             <p className="text-sm text-amber-800">
-              Contact us at support@freshkitchen.com or reply to your confirmation email. We'll be happy to help!
+              Contact us at support@freshkitchen.com. We'll be happy to help!
             </p>
           </CardContent>
         </Card>
@@ -188,7 +149,6 @@ function OrderSuccessContent() {
           </Link>
           <button
             onClick={() => {
-              // Copy order ID to clipboard
               if (orderId) {
                 navigator.clipboard.writeText(orderId);
                 alert("Order ID copied to clipboard!");
@@ -200,7 +160,6 @@ function OrderSuccessContent() {
           </button>
         </div>
 
-        {/* Footer Message */}
         <div className="text-center text-sm text-slate-600 space-y-1">
           <p>Thank you for choosing Fresh Kitchen!</p>
           <p>We're excited to prepare your meals.</p>

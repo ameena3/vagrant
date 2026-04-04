@@ -264,6 +264,11 @@ func handleHTTPServer(ctx context.Context, port string, frontendURL string, sche
 			mw.AuthMiddleware(jwtSecret)(mw.AdminMiddleware(mux)).ServeHTTP(w, r)
 			return
 		}
+		// Wrap customer order routes with auth so JWT claims land in context
+		if strings.HasPrefix(r.URL.Path, "/api/orders") && r.URL.Path != "/api/webhooks/stripe" {
+			mw.AuthMiddleware(jwtSecret)(mux).ServeHTTP(w, r)
+			return
+		}
 		mux.ServeHTTP(w, r)
 	})
 
