@@ -32,21 +32,21 @@ export default function BookingsPage() {
     };
   });
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        setLoading(true);
-        const data = selectedWeek
-          ? await api.getOrders(selectedWeek)
-          : await api.getOrders();
-        setOrders(data);
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const data = selectedWeek
+        ? await api.getOrders(selectedWeek)
+        : await api.getOrders();
+      setOrders(data);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchOrders();
   }, [selectedWeek]);
 
@@ -124,7 +124,7 @@ export default function BookingsPage() {
         </Button>
       </div>
 
-      <BookingTable orders={orders} loading={loading} />
+      <BookingTable orders={orders} loading={loading} onRefresh={fetchOrders} />
     </div>
   );
 }

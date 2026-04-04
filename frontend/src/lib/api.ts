@@ -113,6 +113,12 @@ export const api = {
   removeAdmin: (id: string) =>
     fetchAPI<void>(`/admin/users/${id}`, { method: "DELETE" }),
 
+  updateOrderStatus: (id: string, status: string) =>
+    fetchAPI<{ ok: boolean }>(`/admin/orders/${id}/status`, {
+      method: "PUT",
+      body: JSON.stringify({ status }),
+    }),
+
   getSettings: () =>
     fetchAPI<{ weekends_enabled: boolean; stripe_enabled: boolean }>("/admin/settings"),
 

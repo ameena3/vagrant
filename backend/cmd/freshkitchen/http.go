@@ -31,7 +31,7 @@ import (
 
 // handleHTTPServer starts configures and starts a HTTP server on the given
 // port. It shuts down the server if any error is received in the error channel.
-func handleHTTPServer(ctx context.Context, port string, frontendURL string, scheduleEndpoints *schedule.Endpoints, announcementEndpoints *announcement.Endpoints, adminEndpoints *admin.Endpoints, analyticsEndpoints *analytics.Endpoints, orderEndpoints *order.Endpoints, menuEndpoints *menu.Endpoints, userStore *store.UserStore, jwtSecret string, wg *sync.WaitGroup, errc chan error) {
+func handleHTTPServer(ctx context.Context, port string, frontendURL string, scheduleEndpoints *schedule.Endpoints, announcementEndpoints *announcement.Endpoints, adminEndpoints *admin.Endpoints, analyticsEndpoints *analytics.Endpoints, orderEndpoints *order.Endpoints, menuEndpoints *menu.Endpoints, userStore *store.UserStore, orderStore *store.OrderStore, jwtSecret string, wg *sync.WaitGroup, errc chan error) {
 
 	// Provide the transport specific request decoder and response encoder.
 	var (
@@ -171,6 +171,38 @@ func handleHTTPServer(ctx context.Context, port string, frontendURL string, sche
 		})
 	})))
 	mux.Handle("POST", "/api/admin/users/create", http.HandlerFunc(createUserHandler.ServeHTTP))
+
+	// PUT /api/admin/orders/{id}/status — update order status (requires admin)
+	updateOrderStatusHandler := mw.AuthMiddleware(jwtSecret)(mw.AdminMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		path := strings.TrimPrefix(r.URL.Path, "/api/admin/orders/")
+		id := strings.TrimSuffix(path, "/status")
+		if id == "" {
+			http.Error(w, "Missing order ID", http.StatusBadRequest)
+			return
+		}
+
+		var req struct {
+			Status string `json:"status"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return
+		}
+		validStatuses := map[string]bool{"pending": true, "paid": true, "cancelled": true, "refunded": true}
+		if !validStatuses[req.Status] {
+			http.Error(w, "Invalid status", http.StatusBadRequest)
+			return
+		}
+
+		if err := orderStore.UpdateStatus(r.Context(), id, req.Status); err != nil {
+			http.Error(w, "Failed to update order: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]bool{"ok": true})
+	})))
+	mux.Handle("PUT", "/api/admin/orders/{id}/status", http.HandlerFunc(updateOrderStatusHandler.ServeHTTP))
 
 	// Static file server for uploads
 	fs := http.FileServer(http.Dir("/app/uploads"))

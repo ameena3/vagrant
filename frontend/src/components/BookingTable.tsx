@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -16,17 +16,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Order } from "@/types";
 import { formatDate, formatCurrency } from "@/lib/utils";
+import { api } from "@/lib/api";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
 interface BookingTableProps {
   orders: Order[];
   loading: boolean;
+  onRefresh?: () => void;
 }
 
-export function BookingTable({ orders, loading }: BookingTableProps) {
+export function BookingTable({ orders, loading, onRefresh }: BookingTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   const filteredAndSortedOrders = useMemo(() => {
     let filtered = orders.filter((order) =>
@@ -61,6 +64,18 @@ export function BookingTable({ orders, loading }: BookingTableProps) {
         {labels[status]}
       </Badge>
     );
+  };
+
+  const handleStatusUpdate = async (orderId: string, status: Order["status"]) => {
+    setUpdatingId(orderId);
+    try {
+      await api.updateOrderStatus(orderId, status);
+      onRefresh?.();
+    } catch (err) {
+      console.error("Failed to update order status:", err);
+    } finally {
+      setUpdatingId(null);
+    }
   };
 
   if (loading) {
@@ -133,7 +148,7 @@ export function BookingTable({ orders, loading }: BookingTableProps) {
                 </TableHeader>
                 <TableBody>
                   {filteredAndSortedOrders.map((order) => (
-                    <div key={order.id}>
+                    <React.Fragment key={order.id}>
                       <TableRow
                         className="cursor-pointer hover:bg-slate-50"
                         onClick={() =>
@@ -213,7 +228,7 @@ export function BookingTable({ orders, loading }: BookingTableProps) {
                                   <p className="text-sm text-slate-600">
                                     Order ID
                                   </p>
-                                  <p className="font-mono text-sm">
+                                  <p className="font-mono text-sm break-all">
                                     {order.id}
                                   </p>
                                 </div>
@@ -226,20 +241,40 @@ export function BookingTable({ orders, loading }: BookingTableProps) {
                                   </p>
                                 </div>
                                 <div>
-                                  <p className="text-sm text-slate-600">
-                                    Status
+                                  <p className="text-sm text-slate-600 mb-1">
+                                    Update Status
                                   </p>
-                                  <p className="font-semibold">
-                                    {order.status.charAt(0).toUpperCase() +
-                                      order.status.slice(1)}
-                                  </p>
+                                  <div className="flex flex-wrap gap-2">
+                                    {(["pending", "paid", "cancelled", "refunded"] as const)
+                                      .filter((s) => s !== order.status)
+                                      .map((s) => (
+                                        <Button
+                                          key={s}
+                                          size="sm"
+                                          variant={
+                                            s === "paid"
+                                              ? "default"
+                                              : s === "cancelled"
+                                              ? "destructive"
+                                              : "outline"
+                                          }
+                                          disabled={updatingId === order.id}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleStatusUpdate(order.id, s);
+                                          }}
+                                        >
+                                          Mark {s.charAt(0).toUpperCase() + s.slice(1)}
+                                        </Button>
+                                      ))}
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           </TableCell>
                         </TableRow>
                       )}
-                    </div>
+                    </React.Fragment>
                   ))}
                 </TableBody>
               </Table>
