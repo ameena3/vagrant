@@ -157,6 +157,18 @@ export const api = {
   deleteOrder: (id: string) =>
     fetchAPI<{ ok: boolean }>(`/admin/orders/${id}`, { method: "DELETE" }),
 
+  changePassword: (currentPassword: string, newPassword: string) =>
+    fetchAPI<void>("/users/me/password", {
+      method: "PUT",
+      body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
+    }),
+
+  adminResetPassword: (userId: string, newPassword: string) =>
+    fetchAPI<void>(`/admin/users/${userId}/password`, {
+      method: "PUT",
+      body: JSON.stringify({ new_password: newPassword }),
+    }),
+
   getPublicSettings: () =>
     fetchAPI<{ hide_prices: boolean; weekends_enabled: boolean }>("/settings"),
 

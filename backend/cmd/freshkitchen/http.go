@@ -140,6 +140,34 @@ func handleHTTPServer(ctx context.Context, port string, frontendURL string, sche
 	}))
 	mux.Handle("GET", "/api/users/me", http.HandlerFunc(profileHandler.ServeHTTP))
 
+	// PUT /api/users/me/password — customer changes their own password
+	changePasswordHandler := mw.AuthMiddleware(jwtSecret)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var req struct {
+			CurrentPassword string `json:"current_password"`
+			NewPassword     string `json:"new_password"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return
+		}
+		if strings.TrimSpace(req.CurrentPassword) == "" || strings.TrimSpace(req.NewPassword) == "" {
+			http.Error(w, "current_password and new_password required", http.StatusBadRequest)
+			return
+		}
+		email := mw.GetUserEmail(r.Context())
+		if _, err := appStore.User.FindByCredentials(r.Context(), email, req.CurrentPassword); err != nil {
+			http.Error(w, "Current password is incorrect", http.StatusUnauthorized)
+			return
+		}
+		userID := mw.GetUserID(r.Context())
+		if err := appStore.User.UpdatePassword(r.Context(), userID, req.NewPassword); err != nil {
+			http.Error(w, "Failed to update password: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	mux.Handle("PUT", "/api/users/me/password", http.HandlerFunc(changePasswordHandler.ServeHTTP))
+
 	// POST /api/admin/users/create — create a user (requires admin)
 	createUserHandler := mw.AuthMiddleware(jwtSecret)(mw.AdminMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var req struct {
@@ -173,6 +201,29 @@ func handleHTTPServer(ctx context.Context, port string, frontendURL string, sche
 		})
 	})))
 	mux.Handle("POST", "/api/admin/users/create", http.HandlerFunc(createUserHandler.ServeHTTP))
+
+	// PUT /api/admin/users/{id}/password — admin resets a user's password
+	adminResetPasswordHandler := mw.AuthMiddleware(jwtSecret)(mw.AdminMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		path := strings.TrimPrefix(r.URL.Path, "/api/admin/users/")
+		id := strings.TrimSuffix(path, "/password")
+		if id == "" {
+			http.Error(w, "Missing user ID", http.StatusBadRequest)
+			return
+		}
+		var req struct {
+			NewPassword string `json:"new_password"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil || strings.TrimSpace(req.NewPassword) == "" {
+			http.Error(w, "new_password required", http.StatusBadRequest)
+			return
+		}
+		if err := appStore.User.UpdatePassword(r.Context(), id, req.NewPassword); err != nil {
+			http.Error(w, "Failed to update password: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
+	})))
+	mux.Handle("PUT", "/api/admin/users/{id}/password", http.HandlerFunc(adminResetPasswordHandler.ServeHTTP))
 
 	// PUT /api/admin/users/{id} — update user role (requires admin)
 	updateUserRoleHandler := mw.AuthMiddleware(jwtSecret)(mw.AdminMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

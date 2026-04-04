@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { api } from "@/lib/api";
 import type { User } from "@/types";
-import { Plus, Trash2, Shield, Mail } from "lucide-react";
+import { Plus, Trash2, Shield, Mail, KeyRound } from "lucide-react";
 
 export default function AdminsPage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -39,6 +39,12 @@ export default function AdminsPage() {
   const [newName, setNewName] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newRole, setNewRole] = useState("customer");
+  const [resetPwDialogOpen, setResetPwDialogOpen] = useState(false);
+  const [resetPwUser, setResetPwUser] = useState<User | null>(null);
+  const [resetPwNew, setResetPwNew] = useState("");
+  const [resetPwConfirm, setResetPwConfirm] = useState("");
+  const [resetPwError, setResetPwError] = useState("");
+  const [resetPwLoading, setResetPwLoading] = useState(false);
 
   useEffect(() => {
     fetchUsers();
@@ -89,6 +95,27 @@ export default function AdminsPage() {
       // ignore
     }
     setRoleUpdating(null);
+  }
+
+  async function handleResetPassword(e: React.FormEvent) {
+    e.preventDefault();
+    setResetPwError("");
+    if (resetPwNew !== resetPwConfirm) {
+      setResetPwError("Passwords do not match");
+      return;
+    }
+    if (!resetPwUser) return;
+    setResetPwLoading(true);
+    try {
+      await api.adminResetPassword(resetPwUser.id, resetPwNew);
+      setResetPwDialogOpen(false);
+      setResetPwUser(null);
+      setResetPwNew("");
+      setResetPwConfirm("");
+    } catch (err: any) {
+      setResetPwError(err.message || "Failed to reset password");
+    }
+    setResetPwLoading(false);
   }
 
   async function handleRemoveUser() {
@@ -238,6 +265,61 @@ export default function AdminsPage() {
         </DialogContent>
       </Dialog>
 
+      {/* Reset Password Dialog */}
+      <Dialog open={resetPwDialogOpen} onOpenChange={(open) => { setResetPwDialogOpen(open); if (!open) setResetPwError(""); }}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Reset Password</DialogTitle>
+            <DialogDescription>
+              Set a new password for {resetPwUser?.name || resetPwUser?.email}.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleResetPassword} className="space-y-4 pt-2">
+            <div className="space-y-2">
+              <Label htmlFor="rp-new">New Password</Label>
+              <Input
+                id="rp-new"
+                type="password"
+                placeholder="••••••••"
+                value={resetPwNew}
+                onChange={(e) => setResetPwNew(e.target.value)}
+                required
+                autoFocus
+                disabled={resetPwLoading}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="rp-confirm">Confirm Password</Label>
+              <Input
+                id="rp-confirm"
+                type="password"
+                placeholder="••••••••"
+                value={resetPwConfirm}
+                onChange={(e) => setResetPwConfirm(e.target.value)}
+                required
+                disabled={resetPwLoading}
+              />
+            </div>
+            {resetPwError && (
+              <p className="text-sm text-red-600">{resetPwError}</p>
+            )}
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setResetPwDialogOpen(false)}
+                disabled={resetPwLoading}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={!resetPwNew.trim() || resetPwLoading}>
+                {resetPwLoading ? "Saving…" : "Reset Password"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
       {/* Users List */}
       {loading ? (
         <div className="flex items-center justify-center p-12">
@@ -282,17 +364,34 @@ export default function AdminsPage() {
                       </Select>
                     </div>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      setSelectedUser(user);
-                      setDeleteDialogOpen(true);
-                    }}
-                    className="h-8 w-8 flex-shrink-0"
-                  >
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                  </Button>
+                  <div className="flex flex-col gap-1 flex-shrink-0">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setResetPwUser(user);
+                        setResetPwNew("");
+                        setResetPwConfirm("");
+                        setResetPwError("");
+                        setResetPwDialogOpen(true);
+                      }}
+                      className="h-8 w-8"
+                      title="Reset Password"
+                    >
+                      <KeyRound className="h-4 w-4 text-slate-500" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setSelectedUser(user);
+                        setDeleteDialogOpen(true);
+                      }}
+                      className="h-8 w-8"
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>

@@ -1,4 +1,7 @@
-.PHONY: help up down build restart logs backend frontend mongo clean dev-backend dev-frontend setup
+.PHONY: help up down build restart logs backend frontend mongo clean dev-backend dev-frontend setup buildx-setup buildx-backend buildx-frontend buildx-all rpi-up rpi-down rpi-logs
+
+REGISTRY ?= localhost:5000
+IMAGE_TAG ?= latest
 
 # Default target
 help: ## Show this help message
@@ -84,3 +87,24 @@ status: ## Show status of all services
 
 health: ## Check backend health endpoint
 	@curl -s http://localhost:8080/health | python3 -m json.tool 2>/dev/null || echo "Backend not reachable"
+
+# RPi Deployment Commands
+buildx-setup: ## One-time: create Docker buildx builder for ARM64
+	docker buildx create --name rpi-builder --use 2>/dev/null || docker buildx use rpi-builder
+
+buildx-backend: ## Cross-build backend for ARM64 and push to registry
+	docker buildx build --platform linux/arm64 -t $(REGISTRY)/freshkitchen-backend:$(IMAGE_TAG) --push ./backend
+
+buildx-frontend: ## Cross-build frontend for ARM64 and push to registry
+	docker buildx build --platform linux/arm64 -t $(REGISTRY)/freshkitchen-frontend:$(IMAGE_TAG) --push ./frontend
+
+buildx-all: buildx-backend buildx-frontend ## Build all ARM64 images and push
+
+rpi-up: ## Start services on RPi
+	docker compose -f docker-compose.rpi.yml up -d
+
+rpi-down: ## Stop RPi services
+	docker compose -f docker-compose.rpi.yml down
+
+rpi-logs: ## Tail RPi logs
+	docker compose -f docker-compose.rpi.yml logs -f

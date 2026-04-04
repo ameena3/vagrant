@@ -172,3 +172,19 @@ func (u *UserStore) RemoveAdmin(ctx context.Context, id string) error {
 func (u *UserStore) CountCustomers(ctx context.Context) (int64, error) {
 	return u.col.CountDocuments(ctx, bson.M{"role": "customer"})
 }
+
+func (u *UserStore) UpdatePassword(ctx context.Context, id, newPassword string) error {
+	objID, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+	hash, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	_, err = u.col.UpdateOne(ctx,
+		bson.M{"_id": objID},
+		bson.M{"$set": bson.M{"password_hash": string(hash)}},
+	)
+	return err
+}

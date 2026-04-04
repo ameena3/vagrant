@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
-import { ShoppingCart, Leaf, LogIn, LogOut } from "lucide-react";
+import { ShoppingCart, Leaf, LogIn, LogOut, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -51,6 +51,12 @@ export default function HomePage() {
   const [loginPassword, setLoginPassword] = useState("");
   const [loginError, setLoginError] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
+  const [changePwOpen, setChangePwOpen] = useState(false);
+  const [changePwCurrent, setChangePwCurrent] = useState("");
+  const [changePwNew, setChangePwNew] = useState("");
+  const [changePwConfirm, setChangePwConfirm] = useState("");
+  const [changePwError, setChangePwError] = useState("");
+  const [changePwLoading, setChangePwLoading] = useState(false);
 
   useEffect(() => {
     if (session) {
@@ -61,6 +67,26 @@ export default function HomePage() {
       setIsAdmin(false);
     }
   }, [session]);
+
+  async function handleChangePassword(e: React.FormEvent) {
+    e.preventDefault();
+    setChangePwError("");
+    if (changePwNew !== changePwConfirm) {
+      setChangePwError("New passwords do not match");
+      return;
+    }
+    setChangePwLoading(true);
+    try {
+      await api.changePassword(changePwCurrent, changePwNew);
+      setChangePwOpen(false);
+      setChangePwCurrent("");
+      setChangePwNew("");
+      setChangePwConfirm("");
+    } catch (err: any) {
+      setChangePwError(err.message || "Failed to change password");
+    }
+    setChangePwLoading(false);
+  }
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -188,6 +214,15 @@ export default function HomePage() {
                     Admin
                   </Link>
                 )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setChangePwOpen(true)}
+                  title="Change Password"
+                  className="hover:bg-slate-100"
+                >
+                  <KeyRound className="h-5 w-5 text-slate-600" />
+                </Button>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -352,6 +387,57 @@ export default function HomePage() {
           </Sheet>
         </div>
       )}
+
+      {/* Change Password Modal */}
+      <Dialog open={changePwOpen} onOpenChange={(open) => { setChangePwOpen(open); if (!open) setChangePwError(""); }}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Change Password</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleChangePassword} className="space-y-4 pt-2">
+            <div className="space-y-2">
+              <Label htmlFor="cp-current">Current Password</Label>
+              <Input
+                id="cp-current"
+                type="password"
+                placeholder="••••••••"
+                value={changePwCurrent}
+                onChange={(e) => setChangePwCurrent(e.target.value)}
+                required
+                autoFocus
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="cp-new">New Password</Label>
+              <Input
+                id="cp-new"
+                type="password"
+                placeholder="••••••••"
+                value={changePwNew}
+                onChange={(e) => setChangePwNew(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="cp-confirm">Confirm New Password</Label>
+              <Input
+                id="cp-confirm"
+                type="password"
+                placeholder="••••••••"
+                value={changePwConfirm}
+                onChange={(e) => setChangePwConfirm(e.target.value)}
+                required
+              />
+            </div>
+            {changePwError && (
+              <p className="text-sm text-red-600">{changePwError}</p>
+            )}
+            <Button type="submit" className="w-full" disabled={changePwLoading}>
+              {changePwLoading ? "Updating…" : "Update Password"}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Login Modal */}
       <Dialog open={loginOpen} onOpenChange={setLoginOpen}>
