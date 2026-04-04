@@ -1,38 +1,57 @@
 import { NextAuthOptions } from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-const devBypass = process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === "true";
-
 export const authOptions: NextAuthOptions = {
-  providers: devBypass
-    ? [
-        CredentialsProvider({
-          name: "Dev Bypass",
-          credentials: {},
-          async authorize() {
-            return { id: "dev-admin", name: "Dev Admin", email: "dev@localhost" };
-          },
-        }),
-      ]
-    : [
-        GoogleProvider({
-          clientId: process.env.GOOGLE_CLIENT_ID!,
-          clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-        }),
-      ],
+  providers: [
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) return null;
+
+        const backendUrl =
+          process.env.BACKEND_INTERNAL_URL || "http://backend:8080";
+
+        try {
+          const res = await fetch(`${backendUrl}/api/auth/login`, {
+            method: "POST",
+            body: JSON.stringify({
+              email: credentials.email,
+              password: credentials.password,
+            }),
+            headers: { "Content-Type": "application/json" },
+          });
+
+          if (!res.ok) return null;
+
+          const data = await res.json();
+          return {
+            id: data.user.id,
+            email: data.user.email,
+            name: data.user.name,
+            role: data.user.role,
+            accessToken: data.token,
+          };
+        } catch {
+          return null;
+        }
+      },
+    }),
+  ],
   callbacks: {
-    async jwt({ token, account }) {
-      if (account?.id_token) {
-        token.idToken = account.id_token;
-      }
-      if (!token.idToken) {
-        token.idToken = "dev-bypass-token";
+    async jwt({ token, user }) {
+      if (user) {
+        token.accessToken = (user as any).accessToken;
+        token.role = (user as any).role;
       }
       return token;
     },
     async session({ session, token }) {
-      (session as any).idToken = token.idToken;
+      (session as any).accessToken = token.accessToken;
+      (session as any).userRole = token.role;
       return session;
     },
   },

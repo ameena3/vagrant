@@ -5,6 +5,14 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import { ShoppingCart, Leaf, LogIn, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Sheet,
   SheetContent,
@@ -37,6 +45,11 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [cartOpen, setCartOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [loginLoading, setLoginLoading] = useState(false);
 
   useEffect(() => {
     if (session) {
@@ -47,6 +60,25 @@ export default function HomePage() {
       setIsAdmin(false);
     }
   }, [session]);
+
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    setLoginError("");
+    setLoginLoading(true);
+    const result = await signIn("credentials", {
+      email: loginEmail,
+      password: loginPassword,
+      redirect: false,
+    });
+    setLoginLoading(false);
+    if (result?.ok) {
+      setLoginOpen(false);
+      setLoginEmail("");
+      setLoginPassword("");
+    } else {
+      setLoginError("Invalid email or password");
+    }
+  }
 
   useEffect(() => {
     loadData();
@@ -167,11 +199,7 @@ export default function HomePage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() =>
-                  process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === "true"
-                    ? signIn("credentials")
-                    : signIn()
-                }
+                onClick={() => setLoginOpen(true)}
                 className="gap-2"
               >
                 <LogIn className="h-4 w-4" />
@@ -321,6 +349,50 @@ export default function HomePage() {
           </Sheet>
         </div>
       )}
+
+      {/* Login Modal */}
+      <Dialog open={loginOpen} onOpenChange={setLoginOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Sign In</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleLogin} className="space-y-4 pt-2">
+            <div className="space-y-2">
+              <Label htmlFor="login-email">Email</Label>
+              <Input
+                id="login-email"
+                type="email"
+                placeholder="you@example.com"
+                value={loginEmail}
+                onChange={(e) => setLoginEmail(e.target.value)}
+                required
+                autoFocus
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="login-password">Password</Label>
+              <Input
+                id="login-password"
+                type="password"
+                placeholder="••••••••"
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+                required
+              />
+            </div>
+            {loginError && (
+              <p className="text-sm text-red-600">{loginError}</p>
+            )}
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={loginLoading}
+            >
+              {loginLoading ? "Signing in…" : "Sign In"}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

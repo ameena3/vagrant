@@ -19,7 +19,6 @@ import (
 )
 
 func main() {
-	// Get configuration from environment variables
 	mongoURI := os.Getenv("MONGO_URI")
 	if mongoURI == "" {
 		mongoURI = "mongodb://localhost:27017/freshkitchen"
@@ -35,6 +34,18 @@ func main() {
 		frontendURL = "http://localhost:3000"
 	}
 
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		log.Fatal("JWT_SECRET environment variable is required")
+	}
+
+	adminEmail := os.Getenv("ADMIN_EMAIL")
+	adminPassword := os.Getenv("ADMIN_PASSWORD")
+	adminName := os.Getenv("ADMIN_NAME")
+	if adminName == "" {
+		adminName = "Admin"
+	}
+
 	ctx := context.Background()
 
 	// Initialize MongoDB store
@@ -46,7 +57,12 @@ func main() {
 
 	log.Printf("Connected to MongoDB at %s", mongoURI)
 
-	// Initialize the services with the store
+	// Seed initial admin user if DB is empty
+	if err := s.User.EnsureAdminExists(ctx, adminEmail, adminName, adminPassword); err != nil {
+		log.Printf("Warning: failed to seed admin user: %v", err)
+	}
+
+	// Initialize services
 	var (
 		scheduleSvc     schedule.Service
 		announcementSvc announcement.Service
@@ -64,8 +80,6 @@ func main() {
 		menuSvc = freshkitchen.NewMenu(s)
 	}
 
-	// Wrap the services in endpoints that can be invoked from other services
-	// potentially running in different processes.
 	var (
 		scheduleEndpoints     *schedule.Endpoints
 		announcementEndpoints *announcement.Endpoints
@@ -83,12 +97,8 @@ func main() {
 		menuEndpoints = menu.NewEndpoints(menuSvc)
 	}
 
-	// Create channel used by both the signal handler and server goroutines
-	// to notify the main goroutine when to stop the server.
 	errc := make(chan error)
 
-	// Setup interrupt handler. This optional step configures the process so
-	// that SIGINT and SIGTERM signals cause the services to stop gracefully.
 	go func() {
 		c := make(chan os.Signal, 1)
 		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
@@ -98,15 +108,10 @@ func main() {
 	var wg sync.WaitGroup
 	ctx, cancel := context.WithCancel(ctx)
 
-	// Start the HTTP server
-	handleHTTPServer(ctx, port, frontendURL, scheduleEndpoints, announcementEndpoints, adminEndpoints, analyticsEndpoints, orderEndpoints, menuEndpoints, s.User, &wg, errc)
+	handleHTTPServer(ctx, port, frontendURL, scheduleEndpoints, announcementEndpoints, adminEndpoints, analyticsEndpoints, orderEndpoints, menuEndpoints, s.User, jwtSecret, &wg, errc)
 
-	// Wait for signal.
 	log.Printf("exiting (%v)", <-errc)
-
-	// Send cancellation signal to the goroutines.
 	cancel()
-
 	wg.Wait()
 	log.Printf("exited")
 }

@@ -8,8 +8,8 @@ const API_BASE = "/api/backend";
 
 async function getAuthHeaders(): Promise<Record<string, string>> {
   const session = await getSession();
-  if (session && (session as any).idToken) {
-    return { Authorization: `Bearer ${(session as any).idToken}` };
+  if (session && (session as any).accessToken) {
+    return { Authorization: `Bearer ${(session as any).accessToken}` };
   }
   return {};
 }
@@ -105,12 +105,12 @@ export const api = {
   deleteAnnouncement: (id: string) =>
     fetchAPI<void>(`/admin/announcements/${id}`, { method: "DELETE" }),
 
-  // Admin
+  // Admin / Users
   getAdmins: () =>
     fetchAPI<User[]>("/admin/users"),
 
-  addAdmin: (email: string) =>
-    fetchAPI<User>("/admin/users", { method: "POST", body: JSON.stringify({ email }) }),
+  createUser: (data: { email: string; name: string; password: string; role: string }) =>
+    fetchAPI<User>("/admin/users/create", { method: "POST", body: JSON.stringify(data) }),
 
   removeAdmin: (id: string) =>
     fetchAPI<void>(`/admin/users/${id}`, { method: "DELETE" }),
