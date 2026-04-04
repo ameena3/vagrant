@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Select,
   SelectContent,
@@ -12,33 +12,46 @@ import { Button } from "@/components/ui/button";
 import { BookingTable } from "@/components/BookingTable";
 import { api } from "@/lib/api";
 import { Order } from "@/types";
-import { formatDate, getWeekStart, localDateStr } from "@/lib/utils";
 import { Download } from "lucide-react";
 
-export default function BookingsPage() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedWeek, setSelectedWeek] = useState(getWeekStart());
+function getMonthOptions() {
+  const options: { value: string; label: string }[] = [];
+  const now = new Date();
+  for (let i = 0; i < 12; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    const label = d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    options.push({ value, label });
+  }
+  return options;
+}
 
-  const today = new Date();
-  const currentWeekStart = getWeekStart(today);
-  const weeks = Array.from({ length: 8 }, (_, i) => {
-    const date = new Date(currentWeekStart);
-    date.setDate(date.getDate() - (3 - i) * 7);
-    const weekStart = localDateStr(date);
-    return {
-      label: `Week of ${formatDate(weekStart)}`,
-      value: weekStart,
-    };
-  });
+function currentMonth(): string {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+}
+
+export default function BookingsPage() {
+  const [allOrders, setAllOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth());
+
+  const months = useMemo(() => getMonthOptions(), []);
+
+  const orders = useMemo(() => {
+    if (!selectedMonth) return allOrders;
+    return allOrders.filter((o) => {
+      const d = new Date(o.created_at);
+      const m = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+      return m === selectedMonth;
+    });
+  }, [allOrders, selectedMonth]);
 
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const data = selectedWeek
-        ? await api.getOrders(selectedWeek)
-        : await api.getOrders();
-      setOrders(data);
+      const data = await api.getOrders();
+      setAllOrders(data);
     } catch (error) {
       console.error("Error fetching orders:", error);
     } finally {
@@ -48,12 +61,10 @@ export default function BookingsPage() {
 
   useEffect(() => {
     fetchOrders();
-  }, [selectedWeek]);
+  }, []);
 
   const handleExport = () => {
-    if (orders.length === 0) {
-      return;
-    }
+    if (orders.length === 0) return;
 
     const csv = [
       [
@@ -82,7 +93,7 @@ export default function BookingsPage() {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `bookings-${selectedWeek}.csv`;
+    a.download = `bookings-${selectedMonth}.csv`;
     document.body.appendChild(a);
     a.click();
     window.URL.revokeObjectURL(url);
@@ -100,14 +111,14 @@ export default function BookingsPage() {
 
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="w-full md:w-64">
-          <Select value={selectedWeek} onValueChange={setSelectedWeek}>
+          <Select value={selectedMonth} onValueChange={setSelectedMonth}>
             <SelectTrigger>
-              <SelectValue placeholder="Select a week" />
+              <SelectValue placeholder="Select a month" />
             </SelectTrigger>
             <SelectContent>
-              {weeks.map((week) => (
-                <SelectItem key={week.value} value={week.value}>
-                  {week.label}
+              {months.map((month) => (
+                <SelectItem key={month.value} value={month.value}>
+                  {month.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -124,7 +135,12 @@ export default function BookingsPage() {
         </Button>
       </div>
 
-      <BookingTable orders={orders} loading={loading} onRefresh={fetchOrders} />
+      <BookingTable
+        orders={orders}
+        loading={loading}
+        onRefresh={fetchOrders}
+        pageSize={50}
+      />
     </div>
   );
 }

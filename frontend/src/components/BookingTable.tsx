@@ -23,13 +23,15 @@ interface BookingTableProps {
   orders: Order[];
   loading: boolean;
   onRefresh?: () => void;
+  pageSize?: number;
 }
 
-export function BookingTable({ orders, loading, onRefresh }: BookingTableProps) {
+export function BookingTable({ orders, loading, onRefresh, pageSize }: BookingTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
 
   const filteredAndSortedOrders = useMemo(() => {
     let filtered = orders.filter((order) =>
@@ -43,6 +45,13 @@ export function BookingTable({ orders, loading, onRefresh }: BookingTableProps) 
       return sortDirection === "asc" ? dateA - dateB : dateB - dateA;
     });
   }, [orders, searchTerm, sortDirection]);
+
+  // Reset to page 1 when filters/orders change
+  const totalPages = pageSize ? Math.max(1, Math.ceil(filteredAndSortedOrders.length / pageSize)) : 1;
+  const safePage = Math.min(page, totalPages);
+  const pagedOrders = pageSize
+    ? filteredAndSortedOrders.slice((safePage - 1) * pageSize, safePage * pageSize)
+    : filteredAndSortedOrders;
 
   const getStatusBadge = (status: Order["status"]) => {
     const variants: Record<Order["status"], "default" | "secondary" | "destructive" | "outline"> = {
@@ -147,7 +156,7 @@ export function BookingTable({ orders, loading, onRefresh }: BookingTableProps) 
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredAndSortedOrders.map((order) => (
+                  {pagedOrders.map((order) => (
                     <React.Fragment key={order.id}>
                       <TableRow
                         className="cursor-pointer hover:bg-slate-50"
@@ -278,6 +287,34 @@ export function BookingTable({ orders, loading, onRefresh }: BookingTableProps) 
                   ))}
                 </TableBody>
               </Table>
+            </div>
+          )}
+          {pageSize && totalPages > 1 && (
+            <div className="flex items-center justify-between pt-4">
+              <p className="text-sm text-slate-500">
+                Showing {(safePage - 1) * pageSize + 1}–{Math.min(safePage * pageSize, filteredAndSortedOrders.length)} of {filteredAndSortedOrders.length} bookings
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={safePage === 1}
+                >
+                  Previous
+                </Button>
+                <span className="text-sm text-slate-600">
+                  Page {safePage} of {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={safePage === totalPages}
+                >
+                  Next
+                </Button>
+              </div>
             </div>
           )}
         </CardContent>
