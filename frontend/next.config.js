@@ -9,10 +9,15 @@ const nextConfig = {
     ],
   },
   async rewrites() {
+    const backendBase = process.env.NODE_ENV === 'production' ? 'http://backend:8080' : 'http://localhost:8080';
     return [
       {
         source: '/api/backend/:path*',
-        destination: `${process.env.NODE_ENV === 'production' ? 'http://backend:8080' : 'http://localhost:8080'}/api/:path*`,
+        destination: `${backendBase}/api/:path*`,
+      },
+      {
+        source: '/uploads/:path*',
+        destination: `${backendBase}/uploads/:path*`,
       },
     ];
   },
