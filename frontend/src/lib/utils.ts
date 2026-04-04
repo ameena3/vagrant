@@ -15,8 +15,12 @@ export function localDateStr(date: Date): string {
 }
 
 export function formatDate(date: string | Date): string {
-  // Parse YYYY-MM-DD strings at noon local time to avoid UTC-midnight day-shift.
-  const d = typeof date === "string" ? new Date(date + "T12:00:00") : date;
+  // Bare YYYY-MM-DD strings are parsed as UTC midnight by JS, shifting the day in
+  // non-UTC timezones. Parse them at local noon instead. Full ISO timestamps
+  // (already contain "T") are passed through unchanged.
+  const d = typeof date === "string"
+    ? new Date(date.length === 10 ? date + "T12:00:00" : date)
+    : date;
   return d.toLocaleDateString("en-US", {
     weekday: "short",
     month: "short",
