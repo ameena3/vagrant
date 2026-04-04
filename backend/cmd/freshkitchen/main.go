@@ -99,7 +99,7 @@ func main() {
 	ctx, cancel := context.WithCancel(ctx)
 
 	// Start the HTTP server
-	handleHTTPServer(ctx, port, frontendURL, scheduleEndpoints, announcementEndpoints, adminEndpoints, analyticsEndpoints, orderEndpoints, menuEndpoints, &wg, errc)
+	handleHTTPServer(ctx, port, frontendURL, scheduleEndpoints, announcementEndpoints, adminEndpoints, analyticsEndpoints, orderEndpoints, menuEndpoints, s.User, &wg, errc)
 
 	// Wait for signal.
 	log.Printf("exiting (%v)", <-errc)

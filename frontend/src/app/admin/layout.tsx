@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AdminSidebar } from "@/components/AdminSidebar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { api } from "@/lib/api";
 
 export default function AdminLayout({
   children,
@@ -22,7 +23,9 @@ export default function AdminLayout({
     }
 
     if (session) {
-      setIsAdmin(true);
+      api.getProfile()
+        .then((user) => setIsAdmin(user.role === "admin"))
+        .catch(() => setIsAdmin(false));
     }
   }, [session, status, router]);
 

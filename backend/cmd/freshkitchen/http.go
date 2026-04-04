@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	admin "freshkitchen/gen/admin"
 	analytics "freshkitchen/gen/analytics"
 	announcement "freshkitchen/gen/announcement"
@@ -14,6 +15,8 @@ import (
 	menu "freshkitchen/gen/menu"
 	order "freshkitchen/gen/order"
 	schedule "freshkitchen/gen/schedule"
+	mw "freshkitchen/middleware"
+	"freshkitchen/store"
 	"log"
 	"net"
 	"net/http"
@@ -26,7 +29,7 @@ import (
 
 // handleHTTPServer starts configures and starts a HTTP server on the given
 // port. It shuts down the server if any error is received in the error channel.
-func handleHTTPServer(ctx context.Context, port string, frontendURL string, scheduleEndpoints *schedule.Endpoints, announcementEndpoints *announcement.Endpoints, adminEndpoints *admin.Endpoints, analyticsEndpoints *analytics.Endpoints, orderEndpoints *order.Endpoints, menuEndpoints *menu.Endpoints, wg *sync.WaitGroup, errc chan error) {
+func handleHTTPServer(ctx context.Context, port string, frontendURL string, scheduleEndpoints *schedule.Endpoints, announcementEndpoints *announcement.Endpoints, adminEndpoints *admin.Endpoints, analyticsEndpoints *analytics.Endpoints, orderEndpoints *order.Endpoints, menuEndpoints *menu.Endpoints, userStore *store.UserStore, wg *sync.WaitGroup, errc chan error) {
 
 	// Provide the transport specific request decoder and response encoder.
 	// The goa http package has built-in support for JSON, XML and gob.
@@ -79,6 +82,18 @@ func handleHTTPServer(ctx context.Context, port string, frontendURL string, sche
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"status":"ok"}`))
 	}))
+
+	// Add user profile endpoint (requires auth, returns role)
+	profileHandler := mw.AuthMiddleware(userStore)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]string{
+			"id":    mw.GetUserID(r.Context()),
+			"email": mw.GetUserEmail(r.Context()),
+			"name":  mw.GetUserName(r.Context()),
+			"role":  mw.GetUserRole(r.Context()),
+		})
+	}))
+	mux.Handle("GET", "/api/users/me", http.HandlerFunc(profileHandler.ServeHTTP))
 
 	// Add static file server for uploads
 	fs := http.FileServer(http.Dir("/app/uploads"))

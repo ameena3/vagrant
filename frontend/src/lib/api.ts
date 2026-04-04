@@ -64,6 +64,9 @@ export const api = {
   getOrder: (id: string) =>
     fetchAPI<Order>(`/orders/${id}`),
 
+  getProfile: () =>
+    fetchAPI<User>("/users/me"),
+
   getOrders: (week?: string) =>
     fetchAPI<Order[]>(`/admin/orders${week ? `?week=${week}` : ""}`),
 

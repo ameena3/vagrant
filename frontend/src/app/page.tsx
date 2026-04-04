@@ -36,6 +36,17 @@ export default function HomePage() {
   const [cartItems, setCartItems] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [cartOpen, setCartOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (session) {
+      api.getProfile()
+        .then((user) => setIsAdmin(user.role === "admin"))
+        .catch(() => setIsAdmin(false));
+    } else {
+      setIsAdmin(false);
+    }
+  }, [session]);
 
   useEffect(() => {
     loadData();
@@ -134,6 +145,14 @@ export default function HomePage() {
                   </p>
                   <p className="text-xs text-slate-600">{session.user?.email}</p>
                 </div>
+                {isAdmin && (
+                  <Link
+                    href="/admin"
+                    className="hidden sm:flex items-center gap-1 text-xs font-medium text-green-700 hover:text-green-900 bg-green-50 hover:bg-green-100 px-2 py-1 rounded-md transition-colors"
+                  >
+                    Admin
+                  </Link>
+                )}
                 <Button
                   variant="ghost"
                   size="icon"
