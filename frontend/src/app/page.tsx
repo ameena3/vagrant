@@ -258,7 +258,7 @@ export default function HomePage() {
             </h1>
             <p className="text-lg text-slate-600 sm:text-xl">
               Order nutritious, delicious meals prepared fresh for your week.
-              Choose your favorite meals and have them delivered fresh.
+              Choose your favorite meals and enjoy them fresh.
             </p>
             <div className="flex justify-center gap-2 flex-wrap">
               <Badge className="bg-green-100 text-green-700 border-green-200">
@@ -266,9 +266,6 @@ export default function HomePage() {
               </Badge>
               <Badge className="bg-orange-100 text-orange-700 border-orange-200">
                 👨‍🍳 Homemade Quality
-              </Badge>
-              <Badge className="bg-blue-100 text-blue-700 border-blue-200">
-                📦 Easy Delivery
               </Badge>
             </div>
           </div>

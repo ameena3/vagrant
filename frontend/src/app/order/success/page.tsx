@@ -147,7 +147,7 @@ function OrderSuccessContent() {
               <div>
                 <p className="font-medium text-slate-900">Meal Preparation</p>
                 <p className="text-sm text-slate-600">
-                  We'll start preparing your fresh meals for delivery.
+                  We'll start preparing your fresh meals for pickup.
                 </p>
               </div>
             </div>
@@ -157,9 +157,9 @@ function OrderSuccessContent() {
                 3
               </div>
               <div>
-                <p className="font-medium text-slate-900">Delivery</p>
+                <p className="font-medium text-slate-900">Pickup</p>
                 <p className="text-sm text-slate-600">
-                  Your meals will be delivered fresh at your scheduled time.
+                  Your meals will be ready for pickup at your scheduled time.
                 </p>
               </div>
             </div>

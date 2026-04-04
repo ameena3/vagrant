@@ -271,12 +271,6 @@ function OrderPageContent() {
                   {formatCurrency(totalAmount)}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-slate-600">Delivery</span>
-                <span className="font-medium text-slate-900">
-                  {formatCurrency(0)}
-                </span>
-              </div>
               <Separator className="my-2" />
               <div className="flex justify-between">
                 <span className="text-lg font-semibold text-slate-900">Total</span>
