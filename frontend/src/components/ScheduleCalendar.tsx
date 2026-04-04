@@ -4,7 +4,7 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { formatDate, DAY_NAMES, getWeekDates, cn } from "@/lib/utils";
+import { formatDate, DAY_NAMES, cn } from "@/lib/utils";
 import type { WeekSchedule } from "@/types";
 import { Check, Ban } from "lucide-react";
 
@@ -23,7 +23,6 @@ export function ScheduleCalendar({
   onUnblockDay,
   weekendsEnabled,
 }: ScheduleCalendarProps) {
-  const weekDates = getWeekDates(weekStart);
   const isWeekend = (dayOfWeek: number) => dayOfWeek === 0 || dayOfWeek === 6;
 
   if (!schedule) {
@@ -40,10 +39,11 @@ export function ScheduleCalendar({
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {days.length === 0 ? (
         <p className="col-span-4 text-center text-muted-foreground py-8">No schedule data available for this week.</p>
-      ) : days.map((day, index) => {
-        const isWeekendDay = isWeekend(day.day_of_week);
+      ) : days.map((day) => {
+        // Parse day_of_week from the date string directly to avoid stale DB values
+        const parsedDayOfWeek = new Date(day.date + "T12:00:00").getDay();
+        const isWeekendDay = isWeekend(parsedDayOfWeek);
         const isBlocked = day.blocked;
-        const date = weekDates[index];
 
         return (
           <Card
@@ -60,10 +60,10 @@ export function ScheduleCalendar({
                 {/* Header */}
                 <div>
                   <p className="font-semibold text-sm">
-                    {DAY_NAMES[day.day_of_week]}
+                    {DAY_NAMES[parsedDayOfWeek]}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {formatDate(date)}
+                    {formatDate(new Date(day.date + "T12:00:00"))}
                   </p>
                 </div>
 
@@ -101,7 +101,7 @@ export function ScheduleCalendar({
                   size="sm"
                   className="w-full"
                   onClick={() =>
-                    isBlocked ? onUnblockDay(day.day_of_week) : onBlockDay(day.day_of_week)
+                    isBlocked ? onUnblockDay(parsedDayOfWeek) : onBlockDay(parsedDayOfWeek)
                   }
                   disabled={isWeekendDay && !weekendsEnabled}
                 >

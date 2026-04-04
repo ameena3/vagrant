@@ -95,8 +95,10 @@ func (s *schedulesrvc) UpdateDay(ctx context.Context, p *schedule.UpdateDayPaylo
 		blockReason = *p.BlockReason
 	}
 
+	parsedDate, _ := time.Parse("2006-01-02", p.Date)
 	storeDay := &store.ScheduleDay{
 		Date:        p.Date,
+		DayOfWeek:   int(parsedDate.Weekday()),
 		Blocked:     p.Blocked,
 		BlockReason: blockReason,
 		UpdatedBy:   updatedBy,
