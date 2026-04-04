@@ -135,13 +135,8 @@ func (s *ordersrvc) Checkout(ctx context.Context, p *order.CheckoutPayload) (res
 		// For now, we generate a placeholder
 		url := "https://checkout.stripe.com/pay/" + sessionID
 		checkoutURL = &url
-	} else {
-		// If Stripe is disabled, mark order as paid
-		if err := s.store.Order.UpdateStatus(ctx, p.OrderID, "paid"); err != nil {
-			log.Printf(ctx, "Error updating order status: %v", err)
-			return nil, err
-		}
 	}
+	// When Stripe is disabled, leave the order as "pending" for admin to mark paid manually
 
 	// Update order with session ID
 	if err := s.store.Order.UpdateStripeSession(ctx, p.OrderID, sessionID); err != nil {
