@@ -9,6 +9,7 @@ import (
 	"time"
 
 	order "freshkitchen/gen/order"
+	mw "freshkitchen/middleware"
 	"freshkitchen/store"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -29,11 +30,9 @@ func NewOrder(s *store.Store) order.Service {
 func (s *ordersrvc) CreateOrder(ctx context.Context, p *order.CreateOrderPayload) (res *order.Order, err error) {
 	log.Printf(ctx, "order.createOrder")
 
-	// Extract user info from context (auth would normally provide this)
-	// For now using placeholder values - would come from auth middleware
-	customerID := "placeholder"
-	customerName := "Customer"
-	customerEmail := "customer@example.com"
+	customerID := mw.GetUserID(ctx)
+	customerName := mw.GetUserName(ctx)
+	customerEmail := mw.GetUserEmail(ctx)
 
 	// Convert items
 	items := make([]store.OrderItem, len(p.Items))
