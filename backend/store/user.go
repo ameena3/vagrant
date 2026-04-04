@@ -148,7 +148,7 @@ func (u *UserStore) RemoveAdmin(ctx context.Context, id string) error {
 	if err != nil {
 		return err
 	}
-	_, err = u.col.UpdateOne(ctx, bson.M{"_id": objID}, bson.M{"$set": bson.M{"role": "customer"}})
+	_, err = u.col.DeleteOne(ctx, bson.M{"_id": objID})
 	return err
 }
 

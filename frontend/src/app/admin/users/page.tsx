@@ -198,9 +198,9 @@ export default function AdminsPage() {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Remove Admin</DialogTitle>
+            <DialogTitle>Delete User</DialogTitle>
             <DialogDescription>
-              Are you sure you want to demote {selectedUser?.name || selectedUser?.email}? They will lose admin access.
+              Are you sure you want to delete {selectedUser?.name || selectedUser?.email}? This cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -219,7 +219,7 @@ export default function AdminsPage() {
               onClick={handleRemoveUser}
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Removing…" : "Remove"}
+              {isSubmitting ? "Deleting…" : "Delete"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -257,19 +257,17 @@ export default function AdminsPage() {
                       {user.role === "admin" ? "Admin" : "Customer"}
                     </p>
                   </div>
-                  {user.role === "admin" && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => {
-                        setSelectedUser(user);
-                        setDeleteDialogOpen(true);
-                      }}
-                      className="h-8 w-8 flex-shrink-0"
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setSelectedUser(user);
+                      setDeleteDialogOpen(true);
+                    }}
+                    className="h-8 w-8 flex-shrink-0"
+                  >
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                  </Button>
                 </div>
               </CardContent>
             </Card>
