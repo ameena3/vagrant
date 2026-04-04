@@ -45,12 +45,10 @@ export const api = {
 
   uploadImage: async (file: File): Promise<string> => {
     const authHeaders = await getAuthHeaders();
-    const formData = new FormData();
-    formData.append("image", file);
     const res = await fetch(`${API_BASE}/admin/menus/upload`, {
       method: "POST",
-      headers: authHeaders,
-      body: formData,
+      headers: { ...authHeaders, "Content-Type": file.type || "application/octet-stream" },
+      body: file,
     });
     if (!res.ok) throw new Error("Upload failed");
     const data = await res.json();

@@ -8,6 +8,7 @@ import (
 	"freshkitchen/store"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"goa.design/clue/log"
 )
 
@@ -117,11 +118,13 @@ func (s *schedulesrvc) ToggleWeekends(ctx context.Context, p *schedule.ToggleWee
 
 	settingsColl := s.store.Settings()
 
-	// Update settings
+	// Update settings (upsert so it works even if no settings doc exists yet)
+	opts := options.UpdateOne().SetUpsert(true)
 	_, err = settingsColl.UpdateOne(
 		ctx,
-		bson.M{}, // Empty filter to match any doc or upsert
+		bson.M{},
 		bson.M{"$set": bson.M{"weekends_enabled": p.Enabled}},
+		opts,
 	)
 	if err != nil {
 		log.Printf(ctx, "Error updating weekends setting: %v", err)

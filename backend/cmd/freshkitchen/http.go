@@ -176,7 +176,16 @@ func handleHTTPServer(ctx context.Context, port string, frontendURL string, sche
 	fs := http.FileServer(http.Dir("/app/uploads"))
 	mux.Handle("GET", "/uploads/*", http.HandlerFunc(http.StripPrefix("/uploads/", fs).ServeHTTP))
 
-	var handler http.Handler = mux
+	// Wrap all /api/admin/* Goa routes with JWT validation + admin role check.
+	// Custom handlers (e.g., /api/admin/users/create) already have their own middleware
+	// but double-wrapping is harmless since AuthMiddleware short-circuits on valid tokens.
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasPrefix(r.URL.Path, "/api/admin/") {
+			mw.AuthMiddleware(jwtSecret)(mw.AdminMiddleware(mux)).ServeHTTP(w, r)
+			return
+		}
+		mux.ServeHTTP(w, r)
+	})
 
 	// CORS middleware
 	c := cors.New(cors.Options{

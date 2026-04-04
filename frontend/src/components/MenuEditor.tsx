@@ -170,6 +170,12 @@ export function MenuEditor({
           variant: "destructive",
         });
       }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save menu.",
+        variant: "destructive",
+      });
     } finally {
       setSaving(false);
     }

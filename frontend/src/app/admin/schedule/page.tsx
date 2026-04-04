@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { useToast } from "@/components/ui/use-toast";
 import {
   Dialog,
   DialogContent,
@@ -27,6 +28,7 @@ import type { WeekSchedule } from "@/types";
 import { ChevronLeft, ChevronRight, AlertTriangle } from "lucide-react";
 
 export default function SchedulePage() {
+  const { toast } = useToast();
   const [weekStart, setWeekStart] = useState(getWeekStart());
   const [schedule, setSchedule] = useState<WeekSchedule | null>(null);
   const [weekendsEnabled, setWeekendsEnabled] = useState(false);
@@ -58,9 +60,10 @@ export default function SchedulePage() {
     try {
       await api.toggleWeekends(enabled);
       await fetchSchedule();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error toggling weekends:", err);
       setWeekendsEnabled(!enabled);
+      toast({ title: "Error", description: err?.message || "Failed to update weekends setting.", variant: "destructive" });
     }
   }
 
@@ -75,8 +78,9 @@ export default function SchedulePage() {
             block_reason: undefined,
           });
           await fetchSchedule();
-        } catch (err) {
+        } catch (err: any) {
           console.error("Error blocking day:", err);
+          toast({ title: "Error", description: err?.message || "Failed to block day.", variant: "destructive" });
         }
       }
     }
@@ -92,8 +96,9 @@ export default function SchedulePage() {
             blocked: false,
           });
           await fetchSchedule();
-        } catch (err) {
+        } catch (err: any) {
           console.error("Error unblocking day:", err);
+          toast({ title: "Error", description: err?.message || "Failed to unblock day.", variant: "destructive" });
         }
       }
     }
@@ -109,8 +114,9 @@ export default function SchedulePage() {
       setWeekBlockReason("");
       setBlockWeekDialogOpen(false);
       await fetchSchedule();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error blocking week:", err);
+      toast({ title: "Error", description: err?.message || "Failed to block week.", variant: "destructive" });
     }
   }
 
@@ -121,8 +127,9 @@ export default function SchedulePage() {
         blocked: false,
       });
       await fetchSchedule();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error unblocking week:", err);
+      toast({ title: "Error", description: err?.message || "Failed to unblock week.", variant: "destructive" });
     }
   }
 
