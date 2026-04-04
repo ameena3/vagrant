@@ -26,7 +26,7 @@ export function AnnouncementBanner({ announcements }: AnnouncementBannerProps) {
   }
 
   function dismiss(id: string) {
-    setDismissed((prev) => new Set([...prev, id]));
+    setDismissed((prev) => new Set(prev).add(id));
   }
 
   return (

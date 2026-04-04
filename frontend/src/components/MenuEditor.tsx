@@ -149,18 +149,13 @@ export function MenuEditor({
 
     try {
       setSaving(true);
-      const result = menu
-        ? await api.updateMenu(menu.id, {
-            meals,
-            enabled,
-          })
-        : await api.createMenu({
-            week_start: weekStart,
-            day_of_week: dayOfWeek,
-            date,
-            meals,
-            enabled,
-          });
+      const result = await api.createMenu({
+        week_start: weekStart,
+        day_of_week: dayOfWeek,
+        date,
+        meals,
+        enabled,
+      });
 
       if (result) {
         toast({
@@ -185,20 +180,18 @@ export function MenuEditor({
 
     try {
       setDeleting(true);
-      const success = await api.deleteMenu(menu.id);
-      if (success) {
-        toast({
-          title: "Success",
-          description: "Menu has been deleted successfully.",
-        });
-        onDelete();
-      } else {
-        toast({
-          title: "Error",
-          description: "Failed to delete menu.",
-          variant: "destructive",
-        });
-      }
+      await api.deleteMenu(menu.id);
+      toast({
+        title: "Success",
+        description: "Menu has been deleted successfully.",
+      });
+      onDelete();
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to delete menu.",
+        variant: "destructive",
+      });
     } finally {
       setDeleting(false);
       setShowDeleteDialog(false);

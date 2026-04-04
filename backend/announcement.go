@@ -7,7 +7,6 @@ import (
 	announcement "freshkitchen/gen/announcement"
 	"freshkitchen/store"
 
-	"go.mongodb.org/mongo-driver/v2/bson"
 	"goa.design/clue/log"
 )
 

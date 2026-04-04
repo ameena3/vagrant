@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession, signIn } from "next-auth/react";
 import { ArrowLeft, LogIn, Loader2 } from "lucide-react";
@@ -10,11 +10,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { formatCurrency, DAY_NAMES } from "@/lib/utils";
+import { formatCurrency, DAY_NAMES, getWeekStart } from "@/lib/utils";
 import { api } from "@/lib/api";
 import type { Order, OrderItem } from "@/types";
 
-export default function OrderPage() {
+function OrderPageContent() {
   const { data: session } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -86,8 +86,7 @@ export default function OrderPage() {
         // Create new order
         const newOrder = await api.createOrder({
           items,
-          customer_email: session.user.email || "",
-          customer_name: session.user.name || "",
+          week_start: getWeekStart(),
         });
 
         if (newOrder) {
@@ -325,5 +324,13 @@ export default function OrderPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function OrderPage() {
+  return (
+    <Suspense fallback={<div className="flex h-screen items-center justify-center bg-white"><Loader2 className="h-8 w-8 animate-spin text-green-600" /></div>}>
+      <OrderPageContent />
+    </Suspense>
   );
 }

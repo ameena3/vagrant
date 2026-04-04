@@ -21,7 +21,7 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
     const cssVars = Object.entries(config).reduce(
       (vars, [key, value]) => {
         if (value.color) {
-          vars[`--color-${key}` as any] = value.color;
+          (vars as any)[`--color-${key}`] = value.color;
         }
         return vars;
       },

@@ -82,7 +82,7 @@ func handleHTTPServer(ctx context.Context, port string, frontendURL string, sche
 
 	// Add static file server for uploads
 	fs := http.FileServer(http.Dir("/app/uploads"))
-	mux.Handle("GET", "/uploads/*", http.StripPrefix("/uploads/", fs))
+	mux.Handle("GET", "/uploads/*", http.HandlerFunc(http.StripPrefix("/uploads/", fs).ServeHTTP))
 
 	var handler http.Handler = mux
 

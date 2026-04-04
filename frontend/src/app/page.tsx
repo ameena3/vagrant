@@ -89,8 +89,7 @@ export default function HomePage() {
     // Create order
     const order = await api.createOrder({
       items: cartItems,
-      customer_email: session.user.email,
-      customer_name: session.user.name,
+      week_start: weekStart,
     });
 
     if (order) {
