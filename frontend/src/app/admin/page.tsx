@@ -77,6 +77,10 @@ export default function AdminDashboard() {
     }
   }, [fromDate, toDate]);
 
+  const periodOrders = trends.reduce((sum, t) => sum + t.order_count, 0);
+  const periodRevenue = trends.reduce((sum, t) => sum + t.revenue, 0);
+  const periodLabel = `${fromDate} – ${toDate}`;
+
   const revenueByDay = trends.map((trend) => ({
     date: new Date(trend.date).toLocaleDateString("en-US", {
       month: "short",
@@ -95,7 +99,13 @@ export default function AdminDashboard() {
         </p>
       </div>
 
-      <AnalyticsCards summary={summary} loading={loading} />
+      <AnalyticsCards
+        summary={summary}
+        loading={loading || trendsLoading}
+        periodOrders={periodOrders}
+        periodRevenue={periodRevenue}
+        periodLabel={periodLabel}
+      />
 
       {/* Date range controls */}
       <div className="flex items-end gap-4">

@@ -158,7 +158,7 @@ func (o *OrderStore) CountByDateRange(ctx context.Context, from, to time.Time) (
 
 func (o *OrderStore) GetRevenueByDateRange(ctx context.Context, from, to time.Time) (float64, error) {
 	pipeline := mongo.Pipeline{
-		bson.D{{Key: "$match", Value: bson.M{"created_at": bson.M{"$gte": from, "$lte": to}}}},
+		bson.D{{Key: "$match", Value: bson.M{"created_at": bson.M{"$gte": from, "$lte": to}, "status": "paid"}}},
 		bson.D{{Key: "$group", Value: bson.M{"_id": nil, "total_revenue": bson.M{"$sum": "$total_amount"}}}},
 	}
 	cursor, err := o.col.Aggregate(ctx, pipeline)
@@ -182,7 +182,7 @@ func (o *OrderStore) GetRevenueByDateRange(ctx context.Context, from, to time.Ti
 
 func (o *OrderStore) GetOrderTrends(ctx context.Context, from, to time.Time) ([]OrderTrendResult, error) {
 	pipeline := mongo.Pipeline{
-		bson.D{{Key: "$match", Value: bson.M{"created_at": bson.M{"$gte": from, "$lte": to}}}},
+		bson.D{{Key: "$match", Value: bson.M{"created_at": bson.M{"$gte": from, "$lte": to}, "status": "paid"}}},
 		bson.D{{Key: "$group", Value: bson.M{
 			"_id":         bson.M{"$dateToString": bson.M{"format": "%Y-%m-%d", "date": "$created_at"}},
 			"order_count": bson.M{"$sum": 1},

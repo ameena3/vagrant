@@ -14,20 +14,23 @@ import {
 interface AnalyticsCardsProps {
   summary: AnalyticsSummary | null;
   loading: boolean;
+  periodOrders?: number;
+  periodRevenue?: number;
+  periodLabel?: string;
 }
 
-export function AnalyticsCards({ summary, loading }: AnalyticsCardsProps) {
+export function AnalyticsCards({ summary, loading, periodOrders, periodRevenue, periodLabel }: AnalyticsCardsProps) {
   const cards = [
     {
-      label: "Total Orders",
-      value: summary?.total_orders ?? 0,
+      label: periodLabel ? `Orders (${periodLabel})` : "Total Orders",
+      value: periodOrders ?? summary?.total_orders ?? 0,
       icon: ShoppingCart,
       color: "bg-blue-50",
       iconColor: "text-blue-600",
     },
     {
-      label: "Total Revenue",
-      value: formatCurrency(summary?.total_revenue ?? 0),
+      label: periodLabel ? `Revenue (${periodLabel})` : "Total Revenue",
+      value: formatCurrency(periodRevenue ?? summary?.total_revenue ?? 0),
       icon: DollarSign,
       color: "bg-green-50",
       iconColor: "text-green-600",
