@@ -143,6 +143,23 @@ func (u *UserStore) SetRole(ctx context.Context, email, role string) (*User, err
 	return &user, nil
 }
 
+func (u *UserStore) SetRoleByID(ctx context.Context, id, role string) (*User, error) {
+	objID, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+	var user User
+	err = u.col.FindOneAndUpdate(
+		ctx,
+		bson.M{"_id": objID},
+		bson.M{"$set": bson.M{"role": role}},
+	).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
 func (u *UserStore) RemoveAdmin(ctx context.Context, id string) error {
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {

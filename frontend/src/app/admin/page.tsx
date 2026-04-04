@@ -15,35 +15,41 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { AnalyticsCards } from "@/components/AnalyticsCards";
 import { api } from "@/lib/api";
 import { AnalyticsSummary, OrderTrend, PopularItem } from "@/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
+
+function getMonthStart() {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0];
+}
+
+function getToday() {
+  return new Date().toISOString().split("T")[0];
+}
 
 export default function AdminDashboard() {
   const [summary, setSummary] = useState<AnalyticsSummary | null>(null);
   const [trends, setTrends] = useState<OrderTrend[]>([]);
   const [popularItems, setPopularItems] = useState<PopularItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [trendsLoading, setTrendsLoading] = useState(false);
+
+  const [fromDate, setFromDate] = useState(getMonthStart());
+  const [toDate, setToDate] = useState(getToday());
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchStatic = async () => {
       try {
         setLoading(true);
-        const now = new Date();
-        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-
-        const [summaryData, trendsData, itemsData] = await Promise.all([
+        const [summaryData, itemsData] = await Promise.all([
           api.getAnalyticsSummary(),
-          api.getOrderTrends(
-            thirtyDaysAgo.toISOString().split("T")[0],
-            now.toISOString().split("T")[0]
-          ),
           api.getPopularItems(),
         ]);
-
         setSummary(summaryData);
-        setTrends(trendsData || []);
         setPopularItems(itemsData || []);
       } catch (error) {
         console.error("Error fetching analytics:", error);
@@ -51,9 +57,25 @@ export default function AdminDashboard() {
         setLoading(false);
       }
     };
-
-    fetchData();
+    fetchStatic();
   }, []);
+
+  useEffect(() => {
+    const fetchTrends = async () => {
+      try {
+        setTrendsLoading(true);
+        const trendsData = await api.getOrderTrends(fromDate, toDate);
+        setTrends(trendsData || []);
+      } catch (error) {
+        console.error("Error fetching trends:", error);
+      } finally {
+        setTrendsLoading(false);
+      }
+    };
+    if (fromDate && toDate && fromDate <= toDate) {
+      fetchTrends();
+    }
+  }, [fromDate, toDate]);
 
   const revenueByDay = trends.map((trend) => ({
     date: new Date(trend.date).toLocaleDateString("en-US", {
@@ -75,13 +97,38 @@ export default function AdminDashboard() {
 
       <AnalyticsCards summary={summary} loading={loading} />
 
+      {/* Date range controls */}
+      <div className="flex items-end gap-4">
+        <div className="space-y-1">
+          <Label className="text-sm text-slate-600">From</Label>
+          <Input
+            type="date"
+            value={fromDate}
+            max={toDate}
+            onChange={(e) => setFromDate(e.target.value)}
+            className="w-40"
+          />
+        </div>
+        <div className="space-y-1">
+          <Label className="text-sm text-slate-600">To</Label>
+          <Input
+            type="date"
+            value={toDate}
+            min={fromDate}
+            max={getToday()}
+            onChange={(e) => setToDate(e.target.value)}
+            className="w-40"
+          />
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Order Trends (30 days)</CardTitle>
+            <CardTitle>Order Trends</CardTitle>
           </CardHeader>
           <CardContent>
-            {loading ? (
+            {loading || trendsLoading ? (
               <Skeleton className="h-64 w-full" />
             ) : trends.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
@@ -112,7 +159,7 @@ export default function AdminDashboard() {
             <CardTitle>Revenue by Day</CardTitle>
           </CardHeader>
           <CardContent>
-            {loading ? (
+            {loading || trendsLoading ? (
               <Skeleton className="h-64 w-full" />
             ) : revenueByDay.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>

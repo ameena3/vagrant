@@ -40,6 +40,28 @@ var _ = Service("admin", func() {
 		})
 	})
 
+	Method("updateUserRole", func() {
+		Description("Update a user's role")
+		Payload(func() {
+			Attribute("id", String, "User ID", func() {
+				Meta("struct:tag:json", "id")
+			})
+			Attribute("role", String, "New role", func() {
+				Meta("struct:tag:json", "role")
+			})
+			Attribute("auth_token", String, "Authorization token", func() {
+				Meta("struct:tag:json", "auth_token")
+			})
+			Required("id", "role", "auth_token")
+		})
+		Result(UserResult)
+		HTTP(func() {
+			PUT("/api/admin/users/{id}")
+			Header("auth_token:Authorization")
+			Response(StatusOK)
+		})
+	})
+
 	Method("removeAdmin", func() {
 		Description("Remove an admin user")
 		Payload(func() {

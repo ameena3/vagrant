@@ -113,6 +113,9 @@ export const api = {
   removeAdmin: (id: string) =>
     fetchAPI<void>(`/admin/users/${id}`, { method: "DELETE" }),
 
+  setUserRole: (id: string, role: string) =>
+    fetchAPI<User>(`/admin/users/${id}`, { method: "PUT", body: JSON.stringify({ role }) }),
+
   updateOrderStatus: (id: string, status: string) =>
     fetchAPI<{ ok: boolean }>(`/admin/orders/${id}/status`, {
       method: "PUT",

@@ -33,6 +33,7 @@ export default function AdminsPage() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState("");
+  const [roleUpdating, setRoleUpdating] = useState<string | null>(null);
 
   const [newEmail, setNewEmail] = useState("");
   const [newName, setNewName] = useState("");
@@ -76,6 +77,18 @@ export default function AdminsPage() {
       setFormError(err.message || "Failed to create user");
     }
     setIsSubmitting(false);
+  }
+
+  async function handleRoleChange(user: User, newRole: string) {
+    if (newRole === user.role) return;
+    setRoleUpdating(user.id);
+    try {
+      await api.setUserRole(user.id, newRole);
+      await fetchUsers();
+    } catch {
+      // ignore
+    }
+    setRoleUpdating(null);
   }
 
   async function handleRemoveUser() {
@@ -252,10 +265,22 @@ export default function AdminsPage() {
                       <Mail className="h-3 w-3 flex-shrink-0" />
                       <span className="truncate">{user.email}</span>
                     </p>
-                    <p className="text-xs text-green-700 mt-2 flex items-center gap-1">
-                      <Shield className="h-3 w-3 flex-shrink-0" />
-                      {user.role === "admin" ? "Admin" : "Customer"}
-                    </p>
+                    <div className="mt-2">
+                      <Select
+                        value={user.role}
+                        onValueChange={(val) => handleRoleChange(user, val)}
+                        disabled={roleUpdating === user.id}
+                      >
+                        <SelectTrigger className="h-7 text-xs w-32">
+                          <Shield className="h-3 w-3 mr-1 flex-shrink-0" />
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="customer">Customer</SelectItem>
+                          <SelectItem value="admin">Admin</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                   <Button
                     variant="ghost"
