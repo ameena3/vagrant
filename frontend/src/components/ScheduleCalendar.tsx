@@ -34,9 +34,13 @@ export function ScheduleCalendar({
     );
   }
 
+  const days = schedule?.days ?? [];
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {schedule.days.map((day, index) => {
+      {days.length === 0 ? (
+        <p className="col-span-4 text-center text-muted-foreground py-8">No schedule data available for this week.</p>
+      ) : days.map((day, index) => {
         const isWeekendDay = isWeekend(day.day_of_week);
         const isBlocked = day.blocked;
         const date = weekDates[index];

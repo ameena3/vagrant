@@ -32,6 +32,32 @@ func (s *schedulesrvc) GetWeekSchedule(ctx context.Context, p *schedule.GetWeekS
 		return nil, err
 	}
 
+	// Build lookup map of existing days
+	existingDays := make(map[string]store.ScheduleDay)
+	for _, d := range days {
+		existingDays[d.Date] = d
+	}
+
+	// Always generate a full 7-day week so frontend never receives an empty days slice
+	startDate, parseErr := time.Parse("2006-01-02", p.WeekStart)
+	if parseErr == nil {
+		fullWeek := make([]store.ScheduleDay, 7)
+		for i := 0; i < 7; i++ {
+			date := startDate.AddDate(0, 0, i)
+			dateStr := date.Format("2006-01-02")
+			if existing, ok := existingDays[dateStr]; ok {
+				fullWeek[i] = existing
+			} else {
+				fullWeek[i] = store.ScheduleDay{
+					Date:      dateStr,
+					DayOfWeek: int(date.Weekday()),
+					Blocked:   false,
+				}
+			}
+		}
+		days = fullWeek
+	}
+
 	// Fetch weekends_enabled setting
 	settingsColl := s.store.Settings()
 	var settingsDoc bson.M
