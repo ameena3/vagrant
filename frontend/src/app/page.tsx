@@ -345,6 +345,7 @@ export default function HomePage() {
                   onUpdateComment={updateCartItemComment}
                   onCheckout={handleCheckout}
                   loading={loading}
+                  hidePrices={hidePrices}
                 />
               </div>
             </SheetContent>

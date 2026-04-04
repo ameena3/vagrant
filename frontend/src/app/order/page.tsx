@@ -26,8 +26,10 @@ function OrderPageContent() {
   const [error, setError] = useState<string | null>(null);
   const [expandedCommentIndex, setExpandedCommentIndex] = useState<number | null>(null);
   const [items, setItems] = useState<OrderItem[]>([]);
+  const [hidePrices, setHidePrices] = useState(false);
 
   useEffect(() => {
+    api.getPublicSettings().then(s => setHidePrices(s?.hide_prices ?? false)).catch(() => {});
     // Load order from API if orderId exists
     if (orderId) {
       loadOrder();
@@ -185,9 +187,11 @@ function OrderPageContent() {
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-green-600">
-                        {formatCurrency(item.price)}
-                      </p>
+                      {!hidePrices && (
+                        <p className="font-semibold text-green-600">
+                          {formatCurrency(item.price)}
+                        </p>
+                      )}
                       {!order && (
                         <button
                           onClick={() => removeItem(index)}
@@ -260,28 +264,30 @@ function OrderPageContent() {
         )}
 
         {/* Order Summary */}
-        <Card className="border-green-200 bg-green-50">
-          <CardHeader>
-            <CardTitle className="text-green-900">Order Summary</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-slate-600">Subtotal</span>
-                <span className="font-medium text-slate-900">
-                  {formatCurrency(totalAmount)}
-                </span>
+        {!hidePrices && (
+          <Card className="border-green-200 bg-green-50">
+            <CardHeader>
+              <CardTitle className="text-green-900">Order Summary</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-slate-600">Subtotal</span>
+                  <span className="font-medium text-slate-900">
+                    {formatCurrency(totalAmount)}
+                  </span>
+                </div>
+                <Separator className="my-2" />
+                <div className="flex justify-between">
+                  <span className="text-lg font-semibold text-slate-900">Total</span>
+                  <span className="text-2xl font-bold text-green-600">
+                    {formatCurrency(totalAmount)}
+                  </span>
+                </div>
               </div>
-              <Separator className="my-2" />
-              <div className="flex justify-between">
-                <span className="text-lg font-semibold text-slate-900">Total</span>
-                <span className="text-2xl font-bold text-green-600">
-                  {formatCurrency(totalAmount)}
-                </span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Checkout Section */}
         {displayItems.length > 0 && (

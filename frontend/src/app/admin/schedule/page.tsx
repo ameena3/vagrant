@@ -33,6 +33,7 @@ export default function SchedulePage() {
   const [weekStart, setWeekStart] = useState(getWeekStart());
   const [schedule, setSchedule] = useState<WeekSchedule | null>(null);
   const [weekendsEnabled, setWeekendsEnabled] = useState(false);
+  const [hidePrices, setHidePrices] = useState(false);
   const [loading, setLoading] = useState(true);
   const [blockWeekDialogOpen, setBlockWeekDialogOpen] = useState(false);
   const [weekBlockReason, setWeekBlockReason] = useState("");
@@ -45,15 +46,29 @@ export default function SchedulePage() {
   async function fetchSchedule() {
     setLoading(true);
     try {
-      const data = await api.getSchedule(weekStart);
+      const [data, settings] = await Promise.all([
+        api.getSchedule(weekStart),
+        api.getPublicSettings(),
+      ]);
       if (data) {
         setSchedule(data);
         setWeekendsEnabled(data.weekends_enabled);
       }
+      setHidePrices(settings?.hide_prices ?? false);
     } catch (err) {
       console.error("Error fetching schedule:", err);
     }
     setLoading(false);
+  }
+
+  async function handleToggleHidePrices(hide: boolean) {
+    setHidePrices(hide);
+    try {
+      await api.toggleHidePrices(hide);
+    } catch (err: any) {
+      setHidePrices(!hide);
+      toast({ title: "Error", description: err?.message || "Failed to update price visibility.", variant: "destructive" });
+    }
   }
 
   async function handleToggleWeekends(enabled: boolean) {
@@ -175,6 +190,26 @@ export default function SchedulePage() {
             <Switch
               checked={weekendsEnabled}
               onCheckedChange={handleToggleWeekends}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Hide Prices Toggle */}
+      <Card className="border-blue-200 bg-blue-50">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <Label className="text-base font-semibold">
+                Hide Prices from Customers
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                When enabled, customers will not see prices on the menu or in their cart
+              </p>
+            </div>
+            <Switch
+              checked={hidePrices}
+              onCheckedChange={handleToggleHidePrices}
             />
           </div>
         </CardContent>
