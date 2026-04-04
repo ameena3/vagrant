@@ -1,1 +1,14 @@
-*.vagrant
+node_modules/
+.next/
+.env
+.env.local
+uploads/*
+!uploads/.gitkeep
+*.log
+dist/
+backend/gen/
+__pycache__/
+.DS_Store
+*.swp
+*.swo
+.vagrant/
