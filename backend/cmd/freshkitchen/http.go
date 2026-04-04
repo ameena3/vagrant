@@ -31,7 +31,7 @@ import (
 
 // handleHTTPServer starts configures and starts a HTTP server on the given
 // port. It shuts down the server if any error is received in the error channel.
-func handleHTTPServer(ctx context.Context, port string, frontendURL string, scheduleEndpoints *schedule.Endpoints, announcementEndpoints *announcement.Endpoints, adminEndpoints *admin.Endpoints, analyticsEndpoints *analytics.Endpoints, orderEndpoints *order.Endpoints, menuEndpoints *menu.Endpoints, userStore *store.UserStore, orderStore *store.OrderStore, jwtSecret string, wg *sync.WaitGroup, errc chan error) {
+func handleHTTPServer(ctx context.Context, port string, frontendURL string, scheduleEndpoints *schedule.Endpoints, announcementEndpoints *announcement.Endpoints, adminEndpoints *admin.Endpoints, analyticsEndpoints *analytics.Endpoints, orderEndpoints *order.Endpoints, menuEndpoints *menu.Endpoints, userStore *store.UserStore, orderStore *store.OrderStore, announcementStore *store.AnnouncementStore, jwtSecret string, wg *sync.WaitGroup, errc chan error) {
 
 	// Provide the transport specific request decoder and response encoder.
 	var (
@@ -171,6 +171,54 @@ func handleHTTPServer(ctx context.Context, port string, frontendURL string, sche
 		})
 	})))
 	mux.Handle("POST", "/api/admin/users/create", http.HandlerFunc(createUserHandler.ServeHTTP))
+
+	// PUT /api/admin/users/{id} — update user role (requires admin)
+	updateUserRoleHandler := mw.AuthMiddleware(jwtSecret)(mw.AdminMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		id := strings.TrimPrefix(r.URL.Path, "/api/admin/users/")
+		if id == "" {
+			http.Error(w, "Missing user ID", http.StatusBadRequest)
+			return
+		}
+		var req struct {
+			Role string `json:"role"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return
+		}
+		if req.Role != "admin" && req.Role != "customer" {
+			http.Error(w, "Invalid role", http.StatusBadRequest)
+			return
+		}
+		user, err := userStore.SetRoleByID(r.Context(), id, req.Role)
+		if err != nil {
+			http.Error(w, "Failed to update user role: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]string{
+			"id":    user.ID.Hex(),
+			"email": user.Email,
+			"name":  user.Name,
+			"role":  user.Role,
+		})
+	})))
+	mux.Handle("PUT", "/api/admin/users/{id}", http.HandlerFunc(updateUserRoleHandler.ServeHTTP))
+
+	// GET /api/admin/announcements — list all announcements (requires admin)
+	listAnnouncementsHandler := mw.AuthMiddleware(jwtSecret)(mw.AdminMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		announcements, err := announcementStore.GetAll(r.Context())
+		if err != nil {
+			http.Error(w, "Failed to fetch announcements: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if announcements == nil {
+			announcements = []store.Announcement{}
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(announcements)
+	})))
+	mux.Handle("GET", "/api/admin/announcements", http.HandlerFunc(listAnnouncementsHandler.ServeHTTP))
 
 	// PUT /api/admin/orders/{id}/status — update order status (requires admin)
 	updateOrderStatusHandler := mw.AuthMiddleware(jwtSecret)(mw.AdminMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

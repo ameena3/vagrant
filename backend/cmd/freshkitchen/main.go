@@ -108,7 +108,7 @@ func main() {
 	var wg sync.WaitGroup
 	ctx, cancel := context.WithCancel(ctx)
 
-	handleHTTPServer(ctx, port, frontendURL, scheduleEndpoints, announcementEndpoints, adminEndpoints, analyticsEndpoints, orderEndpoints, menuEndpoints, s.User, s.Order, jwtSecret, &wg, errc)
+	handleHTTPServer(ctx, port, frontendURL, scheduleEndpoints, announcementEndpoints, adminEndpoints, analyticsEndpoints, orderEndpoints, menuEndpoints, s.User, s.Order, s.Announcement, jwtSecret, &wg, errc)
 
 	log.Printf("exiting (%v)", <-errc)
 	cancel()
