@@ -16,6 +16,7 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
 
 export function AdminSidebar() {
@@ -59,7 +60,9 @@ export function AdminSidebar() {
         )}
       >
         <div className="p-6 border-b border-slate-700">
-          <h1 className="text-2xl font-bold">Fresh Kitchen</h1>
+          <h1 className="text-2xl font-bold">
+            Fresh Kitchen<sup>™</sup>
+          </h1>
           <p className="text-sm text-slate-400 mt-1">Admin Panel</p>
         </div>
 
@@ -87,7 +90,11 @@ export function AdminSidebar() {
           })}
         </nav>
 
-        <div className="p-4 border-t border-slate-700">
+        <div className="p-4 border-t border-slate-700 space-y-2">
+          <div className="flex items-center justify-between gap-2 px-3">
+            <span className="text-sm text-slate-400">Theme</span>
+            <ThemeToggle />
+          </div>
           <Button
             variant="ghost"
             className="w-full justify-start gap-3 text-slate-300 hover:bg-slate-800 text-base"

@@ -16,6 +16,7 @@ import { WeekView } from "@/components/WeekView";
 import { DayMenu } from "@/components/DayMenu";
 import { OrderSummary } from "@/components/OrderSummary";
 import { AnnouncementBanner } from "@/components/AnnouncementBanner";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { getWeekStart, getWeekDates, DAY_NAMES } from "@/lib/utils";
 import { api } from "@/lib/api";
 import type {
@@ -119,7 +120,7 @@ export default function HomePage() {
             </div>
             <div className="flex flex-col">
               <span className="text-lg font-bold text-slate-900">
-                Fresh Kitchen
+                Fresh Kitchen<sup>™</sup>
               </span>
               <span className="text-xs text-slate-600">Fresh Homemade Meals</span>
             </div>
@@ -127,6 +128,7 @@ export default function HomePage() {
 
           {/* Right Actions */}
           <div className="flex items-center gap-2 sm:gap-3">
+            <ThemeToggle />
             {session ? (
               <>
                 <div className="hidden text-right sm:block">

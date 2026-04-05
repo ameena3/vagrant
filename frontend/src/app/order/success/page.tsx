@@ -202,7 +202,7 @@ export default function OrderSuccessPage() {
 
         {/* Footer Message */}
         <div className="text-center text-sm text-slate-600 space-y-1">
-          <p>Thank you for choosing Fresh Kitchen!</p>
+          <p>Thank you for choosing Fresh Kitchen<sup>™</sup>!</p>
           <p>We're excited to prepare your meals.</p>
         </div>
       </div>
