@@ -50,11 +50,17 @@ export function AnnouncementBanner({ announcements }: AnnouncementBannerProps) {
           <div
             key={announcement.id}
             className={cn(
-              "flex items-start gap-3 rounded-lg border p-3 animate-in fade-in duration-300",
+              "flex items-start gap-3 rounded-lg border p-3 animate-in fade-in slide-in-from-top-2 duration-300",
               bgColor
             )}
           >
-            <Icon className={cn("mt-0.5 h-5 w-5 flex-shrink-0", iconColor)} />
+            <Icon
+              className={cn(
+                "mt-0.5 h-5 w-5 flex-shrink-0",
+                iconColor,
+                announcement.type === "urgent" && "animate-pulse"
+              )}
+            />
             <p className="flex-1 text-sm font-medium">{announcement.message}</p>
             <button
               onClick={() => dismiss(announcement.id)}
