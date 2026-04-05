@@ -6,13 +6,13 @@ import { Providers } from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Fresh Kitchen - Homemade Meals",
-  description: "Order fresh, homemade meals for the week. Made with love using the freshest ingredients.",
+  title: "Fresh Kitchen\u2122 - Homemade Meals",
+  description: "Order fresh, homemade meals for the week. Made with love using the freshest ingredients. Fresh Kitchen\u2122 is a trademark of Fresh Kitchen.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <Providers>{children}</Providers>
       </body>

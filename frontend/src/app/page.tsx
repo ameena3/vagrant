@@ -20,6 +20,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { WeekView } from "@/components/WeekView";
 import { DayMenu } from "@/components/DayMenu";
 import { OrderSummary } from "@/components/OrderSummary";
@@ -190,7 +191,7 @@ export default function HomePage() {
             </div>
             <div className="flex flex-col">
               <span className="text-lg font-bold text-slate-900">
-                Fresh Kitchen
+                Fresh Kitchen<sup className="ml-0.5 text-xs font-medium text-slate-500">™</sup>
               </span>
               <span className="text-xs text-slate-600">Fresh Homemade Meals</span>
             </div>
@@ -198,6 +199,7 @@ export default function HomePage() {
 
           {/* Right Actions */}
           <div className="flex items-center gap-2 sm:gap-3">
+            <ThemeToggle />
             {session ? (
               <>
                 <div className="hidden text-right sm:block">
@@ -295,6 +297,9 @@ export default function HomePage() {
               Fresh Homemade Meals,{" "}
               <span className="text-green-600">Made with Love</span>
             </h1>
+            <p className="text-xs uppercase tracking-wider text-slate-500">
+              Fresh Kitchen<sup>™</sup>
+            </p>
             <p className="text-lg text-slate-600 sm:text-xl">
               Order nutritious, delicious meals prepared fresh for your week.
               Choose your favorite meals and enjoy them fresh.
