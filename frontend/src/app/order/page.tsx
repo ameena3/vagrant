@@ -129,22 +129,22 @@ function OrderPageContent() {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-white">
+      <div className="flex h-screen items-center justify-center bg-card">
         <Loader2 className="h-8 w-8 animate-spin text-green-600" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-muted/50">
       {/* Header */}
-      <div className="border-b border-slate-200 bg-white sticky top-0 z-40">
+      <div className="border-b border-border bg-card sticky top-0 z-40">
         <div className="flex items-center justify-between px-4 py-4 sm:px-6">
-          <Link href="/" className="flex items-center gap-2 text-slate-600 hover:text-slate-900">
+          <Link href="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-5 w-5" />
             <span className="text-sm font-medium">Back to Menu</span>
           </Link>
-          <h1 className="text-xl font-bold text-slate-900">Order Review</h1>
+          <h1 className="text-xl font-bold text-foreground">Order Review</h1>
           <div className="w-12" />
         </div>
       </div>
@@ -153,32 +153,32 @@ function OrderPageContent() {
       <div className="mx-auto max-w-2xl space-y-6 px-4 py-6 sm:px-6">
         {/* Error Message */}
         {error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-            <p className="text-sm font-medium text-red-800">{error}</p>
+          <div className="rounded-lg border border-red-200 bg-red-50 dark:border-red-900/50 dark:bg-red-900/20 p-4">
+            <p className="text-sm font-medium text-red-800 dark:text-red-300">{error}</p>
           </div>
         )}
 
         {/* Items */}
         {displayItems.length > 0 ? (
-          <Card className="border-slate-200">
+          <Card className="border-border">
             <CardHeader>
               <CardTitle>Order Items</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {displayItems.map((item, index) => (
-                <div key={`${index}`} className="space-y-2 rounded-lg bg-slate-50 p-4">
+                <div key={`${index}`} className="space-y-2 rounded-lg bg-muted/50 p-4">
                   {/* Item Info */}
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center gap-2">
-                        <h4 className="font-medium text-slate-900">
+                        <h4 className="font-medium text-foreground">
                           {item.menu_item_name}
                         </h4>
                         <Badge variant="secondary" className="text-xs">
                           {item.meal_type}
                         </Badge>
                       </div>
-                      <p className="text-xs text-slate-600">
+                      <p className="text-xs text-muted-foreground">
                         {DAY_NAMES[item.day_of_week]},{" "}
                         {new Date(item.date).toLocaleDateString("en-US", {
                           month: "short",
@@ -195,7 +195,7 @@ function OrderPageContent() {
                       {!order && (
                         <button
                           onClick={() => removeItem(index)}
-                          className="text-xs text-slate-500 hover:text-red-600"
+                          className="text-xs text-muted-foreground hover:text-red-600"
                         >
                           Remove
                         </button>
@@ -204,7 +204,7 @@ function OrderPageContent() {
                   </div>
 
                   {/* Comment Section */}
-                  <div className="border-t border-slate-200 pt-2">
+                  <div className="border-t border-border pt-2">
                     {expandedCommentIndex === index ? (
                       <div className="space-y-2">
                         <Textarea
@@ -219,7 +219,7 @@ function OrderPageContent() {
                         />
                         <button
                           onClick={() => setExpandedCommentIndex(null)}
-                          className="text-xs font-medium text-slate-600 hover:text-slate-900"
+                          className="text-xs font-medium text-muted-foreground hover:text-foreground"
                         >
                           Done
                         </button>
@@ -227,15 +227,15 @@ function OrderPageContent() {
                     ) : (
                       <button
                         onClick={() => setExpandedCommentIndex(index)}
-                        className="text-xs text-slate-600 hover:text-slate-900"
+                        className="text-xs text-muted-foreground hover:text-foreground"
                         disabled={!!order}
                       >
                         {item.comment ? (
                           <>
-                            <p className="text-slate-700 font-medium">
+                            <p className="text-foreground font-medium">
                               Note: {item.comment}
                             </p>
-                            {!order && <p className="text-slate-600">Edit</p>}
+                            {!order && <p className="text-muted-foreground">Edit</p>}
                           </>
                         ) : (
                           !order && "Add special instructions"
@@ -248,12 +248,12 @@ function OrderPageContent() {
             </CardContent>
           </Card>
         ) : (
-          <Card className="border-slate-200">
+          <Card className="border-border">
             <CardContent className="flex h-40 flex-col items-center justify-center gap-3">
               <div className="text-4xl">🛒</div>
               <div className="text-center">
-                <p className="font-semibold text-slate-900">No items to order</p>
-                <p className="text-sm text-slate-600">
+                <p className="font-semibold text-foreground">No items to order</p>
+                <p className="text-sm text-muted-foreground">
                   <Link href="/" className="text-green-600 hover:text-green-700">
                     Go back to menu
                   </Link>
@@ -265,22 +265,22 @@ function OrderPageContent() {
 
         {/* Order Summary */}
         {!hidePrices && (
-          <Card className="border-green-200 bg-green-50">
+          <Card className="border-green-200 bg-green-50 dark:border-green-900/50 dark:bg-green-900/20">
             <CardHeader>
-              <CardTitle className="text-green-900">Order Summary</CardTitle>
+              <CardTitle className="text-green-900 dark:text-green-300">Order Summary</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-slate-600">Subtotal</span>
-                  <span className="font-medium text-slate-900">
+                  <span className="text-muted-foreground">Subtotal</span>
+                  <span className="font-medium text-foreground">
                     {formatCurrency(totalAmount)}
                   </span>
                 </div>
                 <Separator className="my-2" />
                 <div className="flex justify-between">
-                  <span className="text-lg font-semibold text-slate-900">Total</span>
-                  <span className="text-2xl font-bold text-green-600">
+                  <span className="text-lg font-semibold text-foreground">Total</span>
+                  <span className="text-2xl font-bold text-green-600 dark:text-green-400">
                     {formatCurrency(totalAmount)}
                   </span>
                 </div>
@@ -316,7 +316,7 @@ function OrderPageContent() {
                   : "Proceed to Checkout"}
               </Button>
             )}
-            <p className="text-center text-xs text-slate-600">
+            <p className="text-center text-xs text-muted-foreground">
               {session?.user
                 ? `Signed in as ${session.user.email}`
                 : "Sign in with Google to continue"}
@@ -330,7 +330,7 @@ function OrderPageContent() {
 
 export default function OrderPage() {
   return (
-    <Suspense fallback={<div className="flex h-screen items-center justify-center bg-white"><Loader2 className="h-8 w-8 animate-spin text-green-600" /></div>}>
+    <Suspense fallback={<div className="flex h-screen items-center justify-center bg-card"><Loader2 className="h-8 w-8 animate-spin text-green-600" /></div>}>
       <OrderPageContent />
     </Suspense>
   );

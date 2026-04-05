@@ -115,6 +115,34 @@ const config: Config = {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        drift: {
+          "0%, 100%": { transform: "translate(0, 0)" },
+          "25%": { transform: "translate(12px, -8px)" },
+          "50%": { transform: "translate(-6px, 10px)" },
+          "75%": { transform: "translate(-10px, -4px)" },
+        },
+        "spin-slow": {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
+        sway: {
+          "0%, 100%": { transform: "rotate(-4deg)" },
+          "50%": { transform: "rotate(4deg)" },
+        },
+        rise: {
+          "0%": { transform: "translateY(100%)", opacity: "0" },
+          "10%": { opacity: "0.8" },
+          "90%": { opacity: "0.8" },
+          "100%": { transform: "translateY(-120%)", opacity: "0" },
+        },
+        "hex-float": {
+          "0%, 100%": { transform: "translateY(0) rotate(0deg)" },
+          "50%": { transform: "translateY(-8px) rotate(3deg)" },
+        },
+        "hex-pulse": {
+          "0%, 100%": { opacity: "0.25", transform: "scale(1)" },
+          "50%": { opacity: "0.6", transform: "scale(1.05)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -126,6 +154,12 @@ const config: Config = {
         "pulse-ring": "pulse-ring 1.8s ease-out infinite",
         ticker: "ticker 30s linear infinite",
         shimmer: "shimmer 3s linear infinite",
+        drift: "drift 20s ease-in-out infinite",
+        "spin-slow": "spin-slow 24s linear infinite",
+        sway: "sway 5s ease-in-out infinite",
+        rise: "rise 12s linear infinite",
+        "hex-float": "hex-float 7s ease-in-out infinite",
+        "hex-pulse": "hex-pulse 4s ease-in-out infinite",
       },
     },
   },

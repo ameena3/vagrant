@@ -46,6 +46,20 @@ export function MenuItemCard({
 
   return (
     <Card className="group relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2 hover:scale-[1.02]">
+      {/* Decorative hex badge */}
+      <div
+        className="pointer-events-none absolute -top-3 -left-3 z-10 h-10 w-10 group-hover:animate-hex-float"
+        aria-hidden="true"
+      >
+        <div className="hex h-full w-full" />
+      </div>
+      {/* Sparkle */}
+      <span
+        className="pointer-events-none absolute top-2 right-2 z-10 text-lg animate-sway"
+        aria-hidden="true"
+      >
+        ✨
+      </span>
       {/* Image or Placeholder */}
       <div className="relative aspect-video w-full overflow-hidden">
         <div
@@ -74,18 +88,18 @@ export function MenuItemCard({
       {/* Content */}
       <div className="p-4 space-y-3">
         <div>
-          <h3 className="font-semibold text-slate-900 line-clamp-2">
+          <h3 className="font-semibold text-foreground line-clamp-2">
             {item.name}
           </h3>
-          <p className="text-sm text-slate-600 line-clamp-2 mt-1">
+          <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
             {item.description}
           </p>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+        <div className="flex items-center justify-between pt-2 border-t border-border">
           {!hidePrices && (
-            <span className="text-lg font-bold text-green-600">
+            <span className="text-lg font-bold text-green-600 dark:text-green-400">
               {formatCurrency(item.price)}
             </span>
           )}

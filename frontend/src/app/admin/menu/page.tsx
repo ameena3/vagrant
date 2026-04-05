@@ -70,8 +70,8 @@ export default function MenuManagement() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900">Menu Management</h1>
-        <p className="text-slate-600 mt-2">
+        <h1 className="text-3xl font-bold text-foreground">Menu Management</h1>
+        <p className="text-muted-foreground mt-2">
           Create and manage menus for each day of the week.
         </p>
       </div>
@@ -91,7 +91,7 @@ export default function MenuManagement() {
               </Button>
 
               <div className="text-center min-w-48">
-                <p className="text-sm text-slate-600">Selected Week</p>
+                <p className="text-sm text-muted-foreground">Selected Week</p>
                 <p className="font-semibold text-lg">
                   {formatDate(weekDates[0])} - {formatDate(weekDates[6])}
                 </p>

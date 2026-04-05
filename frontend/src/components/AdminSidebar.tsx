@@ -16,6 +16,7 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
 
 export function AdminSidebar() {
@@ -54,13 +55,13 @@ export function AdminSidebar() {
 
       <aside
         className={cn(
-          "w-64 bg-slate-900 text-white flex flex-col fixed h-screen lg:relative lg:translate-x-0 transition-transform duration-300 z-40",
+          "w-64 bg-slate-900 text-white dark:bg-card dark:text-card-foreground dark:border-r dark:border-border flex flex-col fixed h-screen lg:relative lg:translate-x-0 transition-transform duration-300 z-40",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="p-6 border-b border-slate-700">
+        <div className="p-6 border-b border-slate-700 dark:border-border">
           <h1 className="text-2xl font-bold">Fresh Kitchen</h1>
-          <p className="text-sm text-slate-400 mt-1">Admin Panel</p>
+          <p className="text-sm text-slate-400 dark:text-muted-foreground mt-1">Admin Panel</p>
         </div>
 
         <nav className="flex-1 p-4 space-y-2">
@@ -74,8 +75,8 @@ export function AdminSidebar() {
                   className={cn(
                     "w-full justify-start gap-3 text-base",
                     active
-                      ? "bg-blue-600 hover:bg-blue-700 text-white"
-                      : "text-slate-300 hover:bg-slate-800"
+                      ? "bg-blue-600 hover:bg-blue-700 text-white dark:bg-primary dark:hover:bg-primary/90 dark:text-primary-foreground"
+                      : "text-slate-300 hover:bg-slate-800 dark:text-muted-foreground dark:hover:bg-accent dark:hover:text-accent-foreground"
                   )}
                   onClick={() => setIsOpen(false)}
                 >
@@ -87,10 +88,14 @@ export function AdminSidebar() {
           })}
         </nav>
 
-        <div className="p-4 border-t border-slate-700">
+        <div className="p-4 border-t border-slate-700 dark:border-border space-y-2">
+          <div className="flex items-center justify-between px-3 py-2 rounded-md hover:bg-slate-800 dark:hover:bg-accent transition-colors">
+            <span className="text-sm text-slate-300 dark:text-muted-foreground">Theme</span>
+            <ThemeToggle />
+          </div>
           <Button
             variant="ghost"
-            className="w-full justify-start gap-3 text-slate-300 hover:bg-slate-800 text-base"
+            className="w-full justify-start gap-3 text-slate-300 hover:bg-slate-800 dark:text-muted-foreground dark:hover:bg-accent dark:hover:text-accent-foreground text-base"
             onClick={() => signOut()}
           >
             <LogOut className="w-5 h-5" />

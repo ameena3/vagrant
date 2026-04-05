@@ -41,11 +41,11 @@ export function DayMenu({
 
   if (!menu || !menu.enabled) {
     return (
-      <div className="flex h-64 flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 p-6 text-center">
+      <div className="flex h-64 flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-border bg-muted/50 p-6 text-center">
         <div className="text-4xl">🚫</div>
         <div className="space-y-1">
-          <p className="font-semibold text-slate-900">No Menu Available</p>
-          <p className="text-sm text-slate-600">
+          <p className="font-semibold text-foreground">No Menu Available</p>
+          <p className="text-sm text-muted-foreground">
             This day is not available for ordering.
           </p>
         </div>
@@ -85,10 +85,10 @@ export function DayMenu({
             {/* Section Header */}
             <div className="flex items-center gap-3 pt-4">
               <Icon className="h-6 w-6 text-orange-500" />
-              <h2 className="text-xl font-semibold text-slate-900">
+              <h2 className="text-xl font-semibold text-foreground">
                 {section.label}
               </h2>
-              <span className="text-sm text-slate-500">
+              <span className="text-sm text-muted-foreground">
                 ({hasItems ? section.items.length : 0} items)
               </span>
             </div>
@@ -109,8 +109,8 @@ export function DayMenu({
                 ))}
               </div>
             ) : (
-              <div className="rounded-lg bg-slate-50 p-8 text-center">
-                <p className="text-sm text-slate-600">
+              <div className="rounded-lg bg-muted/50 p-8 text-center">
+                <p className="text-sm text-muted-foreground">
                   No items available for {section.label.toLowerCase()}
                 </p>
               </div>

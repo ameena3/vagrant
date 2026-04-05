@@ -330,7 +330,7 @@ export function MenuEditor({
                               </label>
                             </div>
                             {item.image_path && (
-                              <p className="text-xs text-slate-500 mt-1">
+                              <p className="text-xs text-muted-foreground mt-1">
                                 Image: {item.image_path.split("/").pop()}
                               </p>
                             )}

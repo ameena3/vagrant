@@ -123,7 +123,7 @@ export function BookingTable({ orders, loading, onRefresh, pageSize, onEdit, onD
 
         <CardContent>
           {filteredAndSortedOrders.length === 0 ? (
-            <p className="text-center text-slate-500 py-8">
+            <p className="text-center text-muted-foreground py-8">
               {searchTerm ? "No bookings match your search." : "No bookings yet."}
             </p>
           ) : (
@@ -145,7 +145,7 @@ export function BookingTable({ orders, loading, onRefresh, pageSize, onEdit, onD
                             sortDirection === "asc" ? "desc" : "asc"
                           )
                         }
-                        className="flex items-center gap-1 hover:text-slate-700"
+                        className="flex items-center gap-1 hover:text-foreground"
                       >
                         Created
                         {sortDirection === "desc" ? (
@@ -161,7 +161,7 @@ export function BookingTable({ orders, loading, onRefresh, pageSize, onEdit, onD
                   {pagedOrders.map((order) => (
                     <React.Fragment key={order.id}>
                       <TableRow
-                        className="cursor-pointer hover:bg-slate-50"
+                        className="cursor-pointer hover:bg-muted/50"
                         onClick={() =>
                           setExpandedOrderId(
                             expandedOrderId === order.id ? null : order.id
@@ -183,7 +183,7 @@ export function BookingTable({ orders, loading, onRefresh, pageSize, onEdit, onD
                         <TableCell>
                           <div>
                             <p className="font-medium">{order.customer_name}</p>
-                            <p className="text-sm text-slate-500">
+                            <p className="text-sm text-muted-foreground">
                               {order.customer_email}
                             </p>
                           </div>
@@ -196,13 +196,13 @@ export function BookingTable({ orders, loading, onRefresh, pageSize, onEdit, onD
                           {formatCurrency(order.total_amount)}
                         </TableCell>
                         <TableCell>{getStatusBadge(order.status)}</TableCell>
-                        <TableCell className="text-right text-sm text-slate-500">
+                        <TableCell className="text-right text-sm text-muted-foreground">
                           {formatDate(order.created_at)}
                         </TableCell>
                       </TableRow>
 
                       {expandedOrderId === order.id && (
-                        <TableRow className="bg-slate-50">
+                        <TableRow className="bg-muted/50">
                           <TableCell colSpan={8}>
                             <div className="p-4 space-y-4">
                               <div>
@@ -213,16 +213,16 @@ export function BookingTable({ orders, loading, onRefresh, pageSize, onEdit, onD
                                   {order.items.map((item, idx) => (
                                     <div
                                       key={idx}
-                                      className="text-sm border-l-2 border-slate-300 pl-3 py-1"
+                                      className="text-sm border-l-2 border-border pl-3 py-1"
                                     >
                                       <p className="font-medium">
                                         {item.menu_item_name}
                                       </p>
-                                      <p className="text-slate-600">
+                                      <p className="text-muted-foreground">
                                         {item.meal_type} - {formatDate(item.date)}
                                       </p>
                                       {item.comment && (
-                                        <p className="text-slate-500 italic">
+                                        <p className="text-muted-foreground italic">
                                           Comment: {item.comment}
                                         </p>
                                       )}
@@ -236,7 +236,7 @@ export function BookingTable({ orders, loading, onRefresh, pageSize, onEdit, onD
 
                               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
-                                  <p className="text-sm text-slate-600">
+                                  <p className="text-sm text-muted-foreground">
                                     Order ID
                                   </p>
                                   <p className="font-mono text-sm break-all">
@@ -244,7 +244,7 @@ export function BookingTable({ orders, loading, onRefresh, pageSize, onEdit, onD
                                   </p>
                                 </div>
                                 <div>
-                                  <p className="text-sm text-slate-600">
+                                  <p className="text-sm text-muted-foreground">
                                     Payment ID
                                   </p>
                                   <p className="font-mono text-sm">
@@ -252,7 +252,7 @@ export function BookingTable({ orders, loading, onRefresh, pageSize, onEdit, onD
                                   </p>
                                 </div>
                                 <div>
-                                  <p className="text-sm text-slate-600 mb-1">
+                                  <p className="text-sm text-muted-foreground mb-1">
                                     Update Status
                                   </p>
                                   <div className="flex flex-wrap gap-2">
@@ -322,7 +322,7 @@ export function BookingTable({ orders, loading, onRefresh, pageSize, onEdit, onD
           )}
           {pageSize && totalPages > 1 && (
             <div className="flex items-center justify-between pt-4">
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-muted-foreground">
                 Showing {(safePage - 1) * pageSize + 1}–{Math.min(safePage * pageSize, filteredAndSortedOrders.length)} of {filteredAndSortedOrders.length} bookings
               </p>
               <div className="flex items-center gap-2">
@@ -334,7 +334,7 @@ export function BookingTable({ orders, loading, onRefresh, pageSize, onEdit, onD
                 >
                   Previous
                 </Button>
-                <span className="text-sm text-slate-600">
+                <span className="text-sm text-muted-foreground">
                   Page {safePage} of {totalPages}
                 </span>
                 <Button

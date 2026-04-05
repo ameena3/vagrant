@@ -66,10 +66,10 @@ export function AnalyticsCards({ summary, loading, periodOrders, periodRevenue, 
               ) : (
                 <>
                   <div className="flex items-center justify-between mb-2">
-                    <p className="text-sm text-slate-600">{card.label}</p>
+                    <p className="text-sm text-muted-foreground">{card.label}</p>
                     <Icon className={`w-5 h-5 ${card.iconColor}`} />
                   </div>
-                  <p className="text-2xl font-bold text-slate-900">
+                  <p className="text-2xl font-bold text-foreground">
                     {card.value}
                   </p>
                 </>
