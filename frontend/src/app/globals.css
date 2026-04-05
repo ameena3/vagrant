@@ -57,3 +57,30 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .blob {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(40px);
+    mix-blend-mode: multiply;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .dark .blob {
+    mix-blend-mode: screen;
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-gradient-shift,
+  .animate-float,
+  .animate-float-slow,
+  .animate-bob,
+  .animate-pulse-ring,
+  .animate-ticker,
+  .animate-shimmer {
+    animation: none !important;
+  }
+}

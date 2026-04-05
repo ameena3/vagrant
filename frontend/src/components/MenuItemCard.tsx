@@ -45,23 +45,30 @@ export function MenuItemCard({
   const gradient = gradients[gradientIndex];
 
   return (
-    <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+    <Card className="group relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2 hover:scale-[1.02]">
       {/* Image or Placeholder */}
-      <div
-        className={cn(
-          "aspect-video w-full bg-gradient-to-br flex items-center justify-center text-white font-semibold text-center px-4",
-          `from-green-400 to-green-600`
-        )}
-      >
-        {item.image_path ? (
-          <img
-            src={item.image_path}
-            alt={item.name}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <span className="text-sm">{item.name}</span>
-        )}
+      <div className="relative aspect-video w-full overflow-hidden">
+        <div
+          className={cn(
+            "h-full w-full bg-gradient-to-br flex items-center justify-center text-white font-semibold text-center px-4 transition-transform duration-500 group-hover:scale-105",
+            `from-green-400 to-green-600`
+          )}
+        >
+          {item.image_path ? (
+            <img
+              src={item.image_path}
+              alt={item.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span className="text-sm">{item.name}</span>
+          )}
+        </div>
+        {/* Shimmer overlay on hover */}
+        <div
+          className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent bg-[length:200%_100%] opacity-0 group-hover:opacity-100 group-hover:animate-shimmer"
+          aria-hidden="true"
+        />
       </div>
 
       {/* Content */}

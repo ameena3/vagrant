@@ -187,7 +187,7 @@ export default function HomePage() {
           {/* Brand */}
           <div className="flex items-center gap-2">
             <div className="rounded-lg bg-green-100 p-2">
-              <Leaf className="h-5 w-5 text-green-600" />
+              <Leaf className="h-5 w-5 text-green-600 animate-bob" />
             </div>
             <div className="flex flex-col">
               <span className="text-lg font-bold text-slate-900">
@@ -257,9 +257,12 @@ export default function HomePage() {
                 >
                   <ShoppingCart className="h-5 w-5 text-orange-600" />
                   {cartItems.length > 0 && (
-                    <Badge className="absolute -right-2 -top-2 h-5 w-5 rounded-full p-0 flex items-center justify-center bg-orange-500 text-white text-xs">
-                      {cartItems.length}
-                    </Badge>
+                    <span className="absolute -right-2 -top-2 h-5 w-5">
+                      <span className="absolute inset-0 rounded-full bg-orange-400 animate-pulse-ring" />
+                      <Badge className="relative h-5 w-5 rounded-full p-0 flex items-center justify-center bg-orange-500 text-white text-xs">
+                        {cartItems.length}
+                      </Badge>
+                    </span>
                   )}
                 </Button>
               </SheetTrigger>
@@ -291,8 +294,23 @@ export default function HomePage() {
         )}
 
         {/* Hero Section */}
-        <div className="bg-gradient-to-r from-green-50 via-emerald-50 to-orange-50 px-4 py-8 sm:px-6 sm:py-12">
-          <div className="mx-auto max-w-4xl space-y-4 text-center">
+        <div className="relative overflow-hidden bg-gradient-to-r from-green-50 via-emerald-50 to-orange-50 bg-[length:200%_200%] animate-gradient-shift px-4 py-8 sm:px-6 sm:py-12">
+          {/* Decorative floating blobs */}
+          <div
+            className="blob animate-float-slow bg-green-300 h-64 w-64 -top-16 -left-16"
+            aria-hidden="true"
+          />
+          <div
+            className="blob animate-float bg-orange-300 h-56 w-56 -bottom-20 -right-10"
+            style={{ animationDelay: "1.5s" }}
+            aria-hidden="true"
+          />
+          <div
+            className="blob animate-float-slow bg-amber-200 h-48 w-48 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+            style={{ animationDelay: "3s" }}
+            aria-hidden="true"
+          />
+          <div className="relative mx-auto max-w-4xl space-y-4 text-center">
             <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl md:text-5xl">
               Fresh Homemade Meals,{" "}
               <span className="text-green-600">Made with Love</span>
@@ -305,10 +323,13 @@ export default function HomePage() {
               Choose your favorite meals and enjoy them fresh.
             </p>
             <div className="flex justify-center gap-2 flex-wrap">
-              <Badge className="bg-green-100 text-green-700 border-green-200">
+              <Badge className="bg-green-100 text-green-700 border-green-200 animate-float">
                 🥗 Fresh Ingredients
               </Badge>
-              <Badge className="bg-orange-100 text-orange-700 border-orange-200">
+              <Badge
+                className="bg-orange-100 text-orange-700 border-orange-200 animate-float"
+                style={{ animationDelay: "1s" }}
+              >
                 👨‍🍳 Homemade Quality
               </Badge>
             </div>
