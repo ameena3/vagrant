@@ -378,7 +378,7 @@ export default function AdminsPage() {
                       className="h-8 w-8"
                       title="Reset Password"
                     >
-                      <KeyRound className="h-4 w-4 text-slate-500" />
+                      <KeyRound className="h-4 w-4 text-muted-foreground" />
                     </Button>
                     <Button
                       variant="ghost"

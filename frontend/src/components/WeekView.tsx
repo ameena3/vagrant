@@ -32,11 +32,11 @@ export function WeekView({
           variant="ghost"
           size="icon"
           onClick={() => onNavigateWeek(-1)}
-          className="hover:bg-green-100"
+          className="hover:bg-green-100 dark:hover:bg-green-900/30"
         >
           <ChevronLeft className="h-5 w-5" />
         </Button>
-        <span className="text-sm font-semibold text-slate-600">
+        <span className="text-sm font-semibold text-muted-foreground">
           {dates[0].toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
@@ -51,7 +51,7 @@ export function WeekView({
           variant="ghost"
           size="icon"
           onClick={() => onNavigateWeek(1)}
-          className="hover:bg-green-100"
+          className="hover:bg-green-100 dark:hover:bg-green-900/30"
         >
           <ChevronRight className="h-5 w-5" />
         </Button>
@@ -79,23 +79,23 @@ export function WeekView({
               className={cn(
                 "flex flex-col items-center gap-1 rounded-lg border-2 p-2 transition-all duration-200",
                 isSelected
-                  ? "border-green-500 bg-green-50 shadow-md"
-                  : "border-slate-200 bg-white hover:border-slate-300",
+                  ? "border-green-500 bg-green-50 dark:bg-green-900/30 shadow-md animate-bob"
+                  : "border-border bg-card hover:border-primary/50",
                 isDisabled && "cursor-not-allowed opacity-50",
                 isToday && !isSelected && "ring-2 ring-orange-300 ring-offset-1"
               )}
             >
-              <span className="text-xs font-semibold text-slate-600">
+              <span className="text-xs font-semibold text-muted-foreground">
                 {DAY_NAMES[dayIndex].slice(0, 3)}
               </span>
               <span className={cn(
                 "text-sm font-bold",
-                isSelected ? "text-green-600" : "text-slate-900"
+                isSelected ? "text-green-600 dark:text-green-400" : "text-foreground"
               )}>
                 {date.getDate()}
               </span>
               {isDisabled && (
-                <span className="text-[10px] text-slate-500">
+                <span className="text-[10px] text-muted-foreground">
                   {isBlocked ? "Closed" : "N/A"}
                 </span>
               )}

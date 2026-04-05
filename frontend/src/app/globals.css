@@ -71,6 +71,58 @@
     mix-blend-mode: screen;
     opacity: 0.35;
   }
+
+  .rise-particle {
+    position: absolute;
+    bottom: 0;
+    pointer-events: none;
+    user-select: none;
+    opacity: 0;
+    will-change: transform, opacity;
+  }
+
+  .hex {
+    clip-path: polygon(
+      25% 6.7%,
+      75% 6.7%,
+      100% 50%,
+      75% 93.3%,
+      25% 93.3%,
+      0% 50%
+    );
+    background: linear-gradient(
+      135deg,
+      hsl(var(--primary) / 0.25),
+      hsl(var(--secondary) / 0.25)
+    );
+  }
+  .dark .hex {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--primary) / 0.4),
+      hsl(var(--secondary) / 0.4)
+    );
+  }
+  .hex-outline {
+    position: relative;
+  }
+  .hex-outline::before {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    clip-path: polygon(
+      25% 6.7%,
+      75% 6.7%,
+      100% 50%,
+      75% 93.3%,
+      25% 93.3%,
+      0% 50%
+    );
+    background: hsl(var(--background));
+  }
+  .honeycomb {
+    position: relative;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -80,7 +132,13 @@
   .animate-bob,
   .animate-pulse-ring,
   .animate-ticker,
-  .animate-shimmer {
+  .animate-shimmer,
+  .animate-drift,
+  .animate-spin-slow,
+  .animate-sway,
+  .animate-rise,
+  .animate-hex-float,
+  .animate-hex-pulse {
     animation: none !important;
   }
 }

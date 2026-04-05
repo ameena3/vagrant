@@ -235,9 +235,9 @@ export function BookingForm({ open, onOpenChange, initial, onSubmit }: BookingFo
               </Button>
             </div>
             {items.map((item, idx) => (
-              <div key={idx} className="rounded-lg border border-slate-200 p-3 space-y-3 bg-slate-50">
+              <div key={idx} className="rounded-lg border border-border p-3 space-y-3 bg-muted/50">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-slate-600">Item {idx + 1}</span>
+                  <span className="text-sm font-medium text-muted-foreground">Item {idx + 1}</span>
                   {items.length > 1 && (
                     <Button
                       type="button"
@@ -307,7 +307,7 @@ export function BookingForm({ open, onOpenChange, initial, onSubmit }: BookingFo
               </div>
             ))}
             {items.length > 0 && (
-              <p className="text-right text-sm font-semibold text-slate-700">
+              <p className="text-right text-sm font-semibold text-foreground">
                 Total: {formatCurrency(total)}
               </p>
             )}

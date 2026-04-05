@@ -35,12 +35,12 @@ export function OrderSummary({
 
   if (items.length === 0) {
     return (
-      <Card className="border-slate-200">
+      <Card className="border-border">
         <CardContent className="flex h-40 flex-col items-center justify-center gap-3">
           <div className="text-4xl">🛒</div>
           <div className="text-center">
-            <p className="font-semibold text-slate-900">Your cart is empty</p>
-            <p className="text-sm text-slate-600">
+            <p className="font-semibold text-foreground">Your cart is empty</p>
+            <p className="text-sm text-muted-foreground">
               Add items from the menu to get started
             </p>
           </div>
@@ -56,7 +56,7 @@ export function OrderSummary({
   };
 
   return (
-    <Card className="border-slate-200">
+    <Card className="border-border">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center justify-between">
           <span>Order Summary</span>
@@ -70,12 +70,12 @@ export function OrderSummary({
         {/* Items List */}
         <div className="max-h-64 space-y-2 overflow-y-auto">
           {items.map((item, index) => (
-            <div key={`${index}`} className="space-y-2 rounded-lg bg-slate-50 p-3">
+            <div key={`${index}`} className="space-y-2 rounded-lg bg-muted/50 p-3">
               {/* Item Header */}
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 space-y-1">
                   <div className="flex items-center gap-2">
-                    <h4 className="font-medium text-slate-900">
+                    <h4 className="font-medium text-foreground">
                       {item.menu_item_name}
                     </h4>
                     <Badge
@@ -85,7 +85,7 @@ export function OrderSummary({
                       {item.meal_type}
                     </Badge>
                   </div>
-                  <p className="text-xs text-slate-600">
+                  <p className="text-xs text-muted-foreground">
                     {DAY_NAMES[item.day_of_week]},{" "}
                     {new Date(item.date).toLocaleDateString("en-US", {
                       month: "short",
@@ -95,7 +95,7 @@ export function OrderSummary({
                 </div>
                 <button
                   onClick={() => onRemoveItem(index)}
-                  className="text-slate-400 transition-colors hover:text-red-500"
+                  className="text-muted-foreground transition-colors hover:text-red-500"
                   aria-label="Remove item"
                 >
                   <X className="h-4 w-4" />
@@ -103,7 +103,7 @@ export function OrderSummary({
               </div>
 
               {/* Item Footer */}
-              <div className="flex items-center justify-between border-t border-slate-200 pt-2">
+              <div className="flex items-center justify-between border-t border-border pt-2">
                 {!hidePrices && (
                   <span className="font-semibold text-green-600">
                     {formatCurrency(item.price)}
@@ -115,7 +115,7 @@ export function OrderSummary({
                       expandedCommentIndex === index ? null : index
                     )
                   }
-                  className="text-xs text-slate-500 transition-colors hover:text-slate-700"
+                  className="text-xs text-muted-foreground transition-colors hover:text-foreground"
                 >
                   {item.comment ? "Edit note" : "Add note"}
                 </button>
@@ -123,7 +123,7 @@ export function OrderSummary({
 
               {/* Comment Section */}
               {expandedCommentIndex === index && (
-                <div className="border-t border-slate-200 pt-2">
+                <div className="border-t border-border pt-2">
                   <Textarea
                     value={item.comment || ""}
                     onChange={(e) => onUpdateComment(index, e.target.value)}
@@ -131,7 +131,7 @@ export function OrderSummary({
                     className="text-xs"
                     rows={2}
                   />
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     e.g., No onions, extra spicy, etc.
                   </p>
                 </div>
@@ -141,11 +141,11 @@ export function OrderSummary({
         </div>
       </CardContent>
 
-      <CardFooter className="flex-col gap-4 border-t border-slate-200">
+      <CardFooter className="flex-col gap-4 border-t border-border">
         {/* Total */}
         {!hidePrices && (
           <div className="flex w-full items-center justify-between pt-4">
-            <span className="text-lg font-semibold text-slate-900">Total</span>
+            <span className="text-lg font-semibold text-foreground">Total</span>
             <span className="text-2xl font-bold text-green-600">
               {formatCurrency(totalAmount)}
             </span>
@@ -163,7 +163,7 @@ export function OrderSummary({
         </Button>
 
         {stripeDisabled && (
-          <p className="text-xs text-center text-slate-600">
+          <p className="text-xs text-center text-muted-foreground">
             Payment processing is currently disabled. Your order will be placed and payment details will be sent separately.
           </p>
         )}

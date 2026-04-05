@@ -143,8 +143,8 @@ export default function BookingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900">Bookings</h1>
-        <p className="text-slate-600 mt-2">
+        <h1 className="text-3xl font-bold text-foreground">Bookings</h1>
+        <p className="text-muted-foreground mt-2">
           View and manage all customer bookings and orders.
         </p>
       </div>

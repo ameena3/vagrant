@@ -45,13 +45,13 @@ export default function AdminLayout({
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="text-center space-y-4">
-          <h1 className="text-2xl font-bold text-slate-900">Access Denied</h1>
-          <p className="text-slate-600">
+          <h1 className="text-2xl font-bold text-foreground">Access Denied</h1>
+          <p className="text-muted-foreground">
             You do not have permission to access this area.
           </p>
           <button
             onClick={() => router.push("/")}
-            className="text-blue-600 hover:underline"
+            className="text-primary hover:underline"
           >
             Return to Home
           </button>
@@ -61,7 +61,7 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-background">
       <AdminSidebar />
       <main className="flex-1 overflow-y-auto lg:p-6 p-2 pt-14 lg:pt-6">
         {children}

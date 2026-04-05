@@ -18,6 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AnalyticsCards } from "@/components/AnalyticsCards";
+import { HoneycombBackdrop } from "@/components/HoneycombBackdrop";
 import { api } from "@/lib/api";
 import { AnalyticsSummary, OrderTrend, PopularItem } from "@/types";
 import { formatCurrency, formatDate, localDateStr } from "@/lib/utils";
@@ -91,10 +92,16 @@ export default function AdminDashboard() {
   }));
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
-        <p className="text-slate-600 mt-2">
+    <div className="relative space-y-8">
+      <HoneycombBackdrop
+        className="hidden md:block -top-8 -right-16 opacity-20 dark:opacity-15"
+        rows={4}
+        cols={5}
+        cellSize={72}
+      />
+      <div className="relative">
+        <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+        <p className="text-muted-foreground mt-2">
           Welcome back. Here's what's happening with Fresh Kitchen today.
         </p>
       </div>
@@ -110,7 +117,7 @@ export default function AdminDashboard() {
       {/* Date range controls */}
       <div className="flex items-end gap-4">
         <div className="space-y-1">
-          <Label className="text-sm text-slate-600">From</Label>
+          <Label className="text-sm text-muted-foreground">From</Label>
           <Input
             type="date"
             value={fromDate}
@@ -120,7 +127,7 @@ export default function AdminDashboard() {
           />
         </div>
         <div className="space-y-1">
-          <Label className="text-sm text-slate-600">To</Label>
+          <Label className="text-sm text-muted-foreground">To</Label>
           <Input
             type="date"
             value={toDate}
@@ -157,7 +164,7 @@ export default function AdminDashboard() {
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-64 flex items-center justify-center text-slate-500">
+              <div className="h-64 flex items-center justify-center text-muted-foreground">
                 No data available
               </div>
             )}
@@ -184,7 +191,7 @@ export default function AdminDashboard() {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-64 flex items-center justify-center text-slate-500">
+              <div className="h-64 flex items-center justify-center text-muted-foreground">
                 No data available
               </div>
             )}
@@ -211,13 +218,13 @@ export default function AdminDashboard() {
                   className="flex items-center justify-between p-3 border rounded-lg"
                 >
                   <div>
-                    <p className="font-medium text-slate-900">{item.name}</p>
-                    <p className="text-sm text-slate-500 capitalize">
+                    <p className="font-medium text-foreground">{item.name}</p>
+                    <p className="text-sm text-muted-foreground capitalize">
                       {item.meal_type}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold text-slate-900">
+                    <p className="font-semibold text-foreground">
                       {item.order_count} orders
                     </p>
                   </div>
@@ -225,7 +232,7 @@ export default function AdminDashboard() {
               ))}
             </div>
           ) : (
-            <div className="h-32 flex items-center justify-center text-slate-500">
+            <div className="h-32 flex items-center justify-center text-muted-foreground">
               No popular items data available
             </div>
           )}

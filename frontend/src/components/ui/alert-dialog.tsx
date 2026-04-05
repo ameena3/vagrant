@@ -78,7 +78,7 @@ const AlertDialogContent = React.forwardRef<
       <div
         ref={ref}
         className={cn(
-          "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-slate-200 bg-white p-6 shadow-lg rounded-lg",
+          "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-border bg-card p-6 shadow-lg rounded-lg",
           className
         )}
         {...props}
@@ -110,7 +110,7 @@ const AlertDialogDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-  <p ref={ref} className={cn("text-sm text-slate-500", className)} {...props} />
+  <p ref={ref} className={cn("text-sm text-muted-foreground", className)} {...props} />
 ))
 AlertDialogDescription.displayName = "AlertDialogDescription"
 
@@ -127,7 +127,7 @@ const AlertDialogAction = React.forwardRef<
         props.onClick?.(e)
       }}
       className={cn(
-        "inline-flex items-center justify-center rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 focus:outline-none",
+        "inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 focus:outline-none",
         className
       )}
       {...props}
@@ -149,7 +149,7 @@ const AlertDialogCancel = React.forwardRef<
         props.onClick?.(e)
       }}
       className={cn(
-        "inline-flex items-center justify-center rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-50 focus:outline-none",
+        "inline-flex items-center justify-center rounded-md border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted/50 focus:outline-none",
         className
       )}
       {...props}
