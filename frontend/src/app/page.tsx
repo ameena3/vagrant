@@ -1,18 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
+import dynamic from "next/dynamic";
 import { ShoppingCart, Leaf, LogIn, LogOut, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import {
   Sheet,
   SheetContent,
@@ -36,6 +29,15 @@ import type {
 } from "@/types";
 import Link from "next/link";
 
+const LoginDialog = dynamic(
+  () => import("@/components/LoginDialog").then((m) => ({ default: m.LoginDialog })),
+  { ssr: false }
+);
+const ChangePasswordDialog = dynamic(
+  () => import("@/components/ChangePasswordDialog").then((m) => ({ default: m.ChangePasswordDialog })),
+  { ssr: false }
+);
+
 export default function HomePage() {
   const { data: session } = useSession();
   const [weekStart, setWeekStart] = useState(getWeekStart());
@@ -49,16 +51,7 @@ export default function HomePage() {
   const [cartOpen, setCartOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
-  const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
-  const [loginError, setLoginError] = useState("");
-  const [loginLoading, setLoginLoading] = useState(false);
   const [changePwOpen, setChangePwOpen] = useState(false);
-  const [changePwCurrent, setChangePwCurrent] = useState("");
-  const [changePwNew, setChangePwNew] = useState("");
-  const [changePwConfirm, setChangePwConfirm] = useState("");
-  const [changePwError, setChangePwError] = useState("");
-  const [changePwLoading, setChangePwLoading] = useState(false);
   const [cartBump, setCartBump] = useState(false);
 
   useEffect(() => {
@@ -70,45 +63,6 @@ export default function HomePage() {
       setIsAdmin(false);
     }
   }, [session]);
-
-  async function handleChangePassword(e: React.FormEvent) {
-    e.preventDefault();
-    setChangePwError("");
-    if (changePwNew !== changePwConfirm) {
-      setChangePwError("New passwords do not match");
-      return;
-    }
-    setChangePwLoading(true);
-    try {
-      await api.changePassword(changePwCurrent, changePwNew);
-      setChangePwOpen(false);
-      setChangePwCurrent("");
-      setChangePwNew("");
-      setChangePwConfirm("");
-    } catch (err: any) {
-      setChangePwError(err.message || "Failed to change password");
-    }
-    setChangePwLoading(false);
-  }
-
-  async function handleLogin(e: React.FormEvent) {
-    e.preventDefault();
-    setLoginError("");
-    setLoginLoading(true);
-    const result = await signIn("credentials", {
-      email: loginEmail,
-      password: loginPassword,
-      redirect: false,
-    });
-    setLoginLoading(false);
-    if (result?.ok) {
-      setLoginOpen(false);
-      setLoginEmail("");
-      setLoginPassword("");
-    } else {
-      setLoginError("Invalid email or password");
-    }
-  }
 
   useEffect(() => {
     loadData();
@@ -133,29 +87,31 @@ export default function HomePage() {
     setLoading(false);
   }
 
-  function navigateWeek(direction: number) {
-    const d = new Date(weekStart + "T00:00:00");
-    d.setDate(d.getDate() + direction * 7);
-    setWeekStart(localDateStr(d));
-  }
+  const navigateWeek = useCallback((direction: number) => {
+    setWeekStart((prev) => {
+      const d = new Date(prev + "T00:00:00");
+      d.setDate(d.getDate() + direction * 7);
+      return localDateStr(d);
+    });
+  }, []);
 
-  function addToCart(item: OrderItem) {
+  const addToCart = useCallback((item: OrderItem) => {
     setCartItems((prev) => [...prev, item]);
     setCartBump(true);
     setTimeout(() => setCartBump(false), 450);
-  }
+  }, []);
 
-  function removeFromCart(index: number) {
+  const removeFromCart = useCallback((index: number) => {
     setCartItems((prev) => prev.filter((_, i) => i !== index));
-  }
+  }, []);
 
-  function updateCartItemComment(index: number, comment: string) {
+  const updateCartItemComment = useCallback((index: number, comment: string) => {
     setCartItems((prev) =>
       prev.map((item, i) => (i === index ? { ...item, comment } : item))
     );
-  }
+  }, []);
 
-  async function handleCheckout() {
+  const handleCheckout = useCallback(async () => {
     if (cartItems.length === 0) return;
 
     if (!session?.user?.email || !session?.user?.name) {
@@ -163,23 +119,28 @@ export default function HomePage() {
       return;
     }
 
-    // Create order
     const order = await api.createOrder({
       items: cartItems,
       week_start: weekStart,
     });
 
     if (order) {
-      // Redirect to order page
       window.location.href = `/order?orderId=${order.id}`;
     }
-  }
+  }, [cartItems, session, weekStart]);
 
-  const selectedMenu = menus.find((m) => m.day_of_week === selectedDay);
-  const selectedDate = getWeekDates(weekStart)[selectedDay];
-  const isDayBlocked = schedule?.days?.find(
-    (d) => d.day_of_week === selectedDay
-  )?.blocked;
+  const selectedMenu = useMemo(
+    () => menus.find((m) => m.day_of_week === selectedDay),
+    [menus, selectedDay]
+  );
+  const selectedDate = useMemo(
+    () => getWeekDates(weekStart)[selectedDay],
+    [weekStart, selectedDay]
+  );
+  const isDayBlocked = useMemo(
+    () => schedule?.days?.find((d) => d.day_of_week === selectedDay)?.blocked,
+    [schedule, selectedDay]
+  );
   const isWeekend = selectedDay === 0 || selectedDay === 6;
   const weekendDisabled = isWeekend && !schedule?.weekends_enabled;
 
@@ -498,100 +459,8 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Change Password Modal */}
-      <Dialog open={changePwOpen} onOpenChange={(open) => { setChangePwOpen(open); if (!open) setChangePwError(""); }}>
-        <DialogContent className="sm:max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Change Password</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleChangePassword} className="space-y-4 pt-2">
-            <div className="space-y-2">
-              <Label htmlFor="cp-current">Current Password</Label>
-              <Input
-                id="cp-current"
-                type="password"
-                placeholder="••••••••"
-                value={changePwCurrent}
-                onChange={(e) => setChangePwCurrent(e.target.value)}
-                required
-                autoFocus
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="cp-new">New Password</Label>
-              <Input
-                id="cp-new"
-                type="password"
-                placeholder="••••••••"
-                value={changePwNew}
-                onChange={(e) => setChangePwNew(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="cp-confirm">Confirm New Password</Label>
-              <Input
-                id="cp-confirm"
-                type="password"
-                placeholder="••••••••"
-                value={changePwConfirm}
-                onChange={(e) => setChangePwConfirm(e.target.value)}
-                required
-              />
-            </div>
-            {changePwError && (
-              <p className="text-sm text-red-600">{changePwError}</p>
-            )}
-            <Button type="submit" className="w-full" disabled={changePwLoading}>
-              {changePwLoading ? "Updating…" : "Update Password"}
-            </Button>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Login Modal */}
-      <Dialog open={loginOpen} onOpenChange={setLoginOpen}>
-        <DialogContent className="sm:max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Sign In</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleLogin} className="space-y-4 pt-2">
-            <div className="space-y-2">
-              <Label htmlFor="login-email">Email</Label>
-              <Input
-                id="login-email"
-                type="email"
-                placeholder="you@example.com"
-                value={loginEmail}
-                onChange={(e) => setLoginEmail(e.target.value)}
-                required
-                autoFocus
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="login-password">Password</Label>
-              <Input
-                id="login-password"
-                type="password"
-                placeholder="••••••••"
-                value={loginPassword}
-                onChange={(e) => setLoginPassword(e.target.value)}
-                required
-              />
-            </div>
-            {loginError && (
-              <p className="text-sm text-red-600">{loginError}</p>
-            )}
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loginLoading}
-            >
-              {loginLoading ? "Signing in…" : "Sign In"}
-            </Button>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <ChangePasswordDialog open={changePwOpen} onOpenChange={setChangePwOpen} />
+      <LoginDialog open={loginOpen} onOpenChange={setLoginOpen} />
     </div>
   );
 }

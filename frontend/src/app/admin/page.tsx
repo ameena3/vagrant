@@ -1,18 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-} from "recharts";
+import dynamic from "next/dynamic";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
@@ -21,7 +10,22 @@ import { AnalyticsCards } from "@/components/AnalyticsCards";
 import { HoneycombBackdrop } from "@/components/HoneycombBackdrop";
 import { api } from "@/lib/api";
 import { AnalyticsSummary, OrderTrend, PopularItem } from "@/types";
-import { formatCurrency, formatDate, localDateStr } from "@/lib/utils";
+import { formatCurrency, localDateStr } from "@/lib/utils";
+
+const OrderTrendsChart = dynamic(
+  () =>
+    import("@/components/OrderTrendsChart").then((m) => ({
+      default: m.OrderTrendsChart,
+    })),
+  { ssr: false, loading: () => <Skeleton className="h-64 w-full" /> }
+);
+const RevenueChart = dynamic(
+  () =>
+    import("@/components/RevenueChart").then((m) => ({
+      default: m.RevenueChart,
+    })),
+  { ssr: false, loading: () => <Skeleton className="h-64 w-full" /> }
+);
 
 function getMonthStart() {
   const now = new Date();
@@ -78,10 +82,6 @@ export default function AdminDashboard() {
     }
   }, [fromDate, toDate]);
 
-  const periodOrders = trends.reduce((sum, t) => sum + t.order_count, 0);
-  const periodRevenue = trends.reduce((sum, t) => sum + t.revenue, 0);
-  const periodLabel = `${fromDate} – ${toDate}`;
-
   const revenueByDay = trends.map((trend) => ({
     date: new Date(trend.date).toLocaleDateString("en-US", {
       month: "short",
@@ -106,13 +106,17 @@ export default function AdminDashboard() {
         </p>
       </div>
 
-      <AnalyticsCards
-        summary={summary}
-        loading={loading || trendsLoading}
-        periodOrders={periodOrders}
-        periodRevenue={periodRevenue}
-        periodLabel={periodLabel}
-      />
+      <AnalyticsCards summary={summary} loading={loading} />
+
+      {/* Period summary */}
+      {!trendsLoading && trends.length > 0 && (
+        <p className="text-sm text-muted-foreground">
+          Period ({fromDate} – {toDate}):{" "}
+          {trends.reduce((sum, t) => sum + t.order_count, 0)} orders,{" "}
+          {formatCurrency(trends.reduce((sum, t) => sum + t.revenue, 0))}{" "}
+          revenue
+        </p>
+      )}
 
       {/* Date range controls */}
       <div className="flex items-end gap-4">
@@ -148,21 +152,7 @@ export default function AdminDashboard() {
             {loading || trendsLoading ? (
               <Skeleton className="h-64 w-full" />
             ) : trends.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={revenueByDay}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="orders"
-                    stroke="#3b82f6"
-                    name="Orders"
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+              <OrderTrendsChart data={revenueByDay} />
             ) : (
               <div className="h-64 flex items-center justify-center text-muted-foreground">
                 No data available
@@ -179,17 +169,7 @@ export default function AdminDashboard() {
             {loading || trendsLoading ? (
               <Skeleton className="h-64 w-full" />
             ) : revenueByDay.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={revenueByDay}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip
-                    formatter={(value: any) => formatCurrency(value)}
-                  />
-                  <Bar dataKey="revenue" fill="#10b981" name="Revenue" />
-                </BarChart>
-              </ResponsiveContainer>
+              <RevenueChart data={revenueByDay} />
             ) : (
               <div className="h-64 flex items-center justify-center text-muted-foreground">
                 No data available

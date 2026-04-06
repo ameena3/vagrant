@@ -14,40 +14,37 @@ import {
 interface AnalyticsCardsProps {
   summary: AnalyticsSummary | null;
   loading: boolean;
-  periodOrders?: number;
-  periodRevenue?: number;
-  periodLabel?: string;
 }
 
-export function AnalyticsCards({ summary, loading, periodOrders, periodRevenue, periodLabel }: AnalyticsCardsProps) {
+export function AnalyticsCards({ summary, loading }: AnalyticsCardsProps) {
   const cards = [
     {
-      label: periodLabel ? `Orders (${periodLabel})` : "Total Orders",
-      value: periodOrders ?? summary?.total_orders ?? 0,
+      label: "Total Orders",
+      value: summary?.total_orders ?? 0,
       icon: ShoppingCart,
-      color: "bg-blue-50",
-      iconColor: "text-blue-600",
+      color: "bg-blue-50 dark:bg-blue-950/40",
+      iconColor: "text-blue-600 dark:text-blue-400",
     },
     {
-      label: periodLabel ? `Revenue (${periodLabel})` : "Total Revenue",
-      value: formatCurrency(periodRevenue ?? summary?.total_revenue ?? 0),
+      label: "Total Revenue",
+      value: formatCurrency(summary?.total_revenue ?? 0),
       icon: DollarSign,
-      color: "bg-green-50",
-      iconColor: "text-green-600",
+      color: "bg-green-50 dark:bg-green-950/40",
+      iconColor: "text-green-600 dark:text-green-400",
     },
     {
       label: "Customers",
       value: summary?.total_customers ?? 0,
       icon: Users,
-      color: "bg-purple-50",
-      iconColor: "text-purple-600",
+      color: "bg-purple-50 dark:bg-purple-950/40",
+      iconColor: "text-purple-600 dark:text-purple-400",
     },
     {
       label: "This Week's Orders",
       value: summary?.orders_this_week ?? 0,
       icon: TrendingUp,
-      color: "bg-orange-50",
-      iconColor: "text-orange-600",
+      color: "bg-orange-50 dark:bg-orange-950/40",
+      iconColor: "text-orange-600 dark:text-orange-400",
     },
   ];
 

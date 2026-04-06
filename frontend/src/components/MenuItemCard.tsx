@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Plus, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -17,7 +17,7 @@ interface MenuItemCardProps {
   hidePrices?: boolean;
 }
 
-export function MenuItemCard({
+export const MenuItemCard = React.memo(function MenuItemCard({
   item,
   mealType,
   date,
@@ -128,4 +128,4 @@ export function MenuItemCard({
       </div>
     </Card>
   );
-}
+});

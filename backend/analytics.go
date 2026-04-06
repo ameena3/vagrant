@@ -53,7 +53,7 @@ func (s *analyticssrvc) Summary(ctx context.Context, p *analytics.SummaryPayload
 
 	// Get this week's orders and revenue
 	now := time.Now()
-	weekStart := now.AddDate(0, 0, -int(now.Weekday()))
+	weekStart := time.Date(now.Year(), now.Month(), now.Day()-int(now.Weekday()), 0, 0, 0, 0, now.Location())
 
 	ordersThisWeek, err := s.store.Order.CountByDateRange(ctx, weekStart, now)
 	if err != nil {

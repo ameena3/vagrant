@@ -62,10 +62,11 @@
   .blob {
     position: absolute;
     border-radius: 9999px;
-    filter: blur(40px);
+    filter: blur(28px);
     mix-blend-mode: multiply;
     opacity: 0.55;
     pointer-events: none;
+    will-change: transform;
   }
   .dark .blob {
     mix-blend-mode: screen;
@@ -122,6 +123,7 @@
   }
   .honeycomb {
     position: relative;
+    contain: layout style;
   }
 }
 

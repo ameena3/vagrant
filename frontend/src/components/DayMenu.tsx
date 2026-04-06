@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { Coffee, Sun, Moon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MenuItemCard } from "@/components/MenuItemCard";
@@ -15,7 +16,7 @@ interface DayMenuProps {
   hidePrices?: boolean;
 }
 
-export function DayMenu({
+export const DayMenu = React.memo(function DayMenu({
   menu,
   loading,
   onAddToCart,
@@ -125,4 +126,4 @@ export function DayMenu({
       })}
     </div>
   );
-}
+});

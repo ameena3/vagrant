@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn, localDateStr, getWeekDates, DAY_NAMES } from "@/lib/utils";
@@ -13,7 +14,7 @@ interface WeekViewProps {
   schedule?: WeekSchedule | null;
 }
 
-export function WeekView({
+export const WeekView = React.memo(function WeekView({
   weekStart,
   selectedDay,
   onSelectDay,
@@ -105,4 +106,4 @@ export function WeekView({
       </div>
     </div>
   );
-}
+});

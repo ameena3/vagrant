@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 
 type HoneycombBackdropProps = {
@@ -23,34 +24,37 @@ export function HoneycombBackdrop({
   const hStep = cellSize * 0.75;
   const vStep = cellSize * 0.866;
 
-  const cells: Array<{
-    top: number;
-    left: number;
-    size: number;
-    delay: string;
-    duration: string;
-    pulseDelay: string;
-    pulse: boolean;
-  }> = [];
+  const cells = useMemo(() => {
+    const result: Array<{
+      top: number;
+      left: number;
+      size: number;
+      delay: string;
+      duration: string;
+      pulseDelay: string;
+      pulse: boolean;
+    }> = [];
 
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      const sizeJitter = ((r * 7 + c * 13) % 5) * 4; // 0..16
-      const size = cellSize + sizeJitter - 8;
-      const left = c * hStep + (r % 2 === 1 ? hStep / 2 : 0);
-      const top = r * vStep;
-      const seed = (r * 31 + c * 17) % 100;
-      cells.push({
-        top,
-        left,
-        size,
-        delay: `${(seed % 60) / 10}s`,
-        duration: `${5 + (seed % 40) / 10}s`,
-        pulseDelay: `${((r + c) * 0.35) % 4}s`,
-        pulse: (r + c) % 3 === 0,
-      });
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const sizeJitter = ((r * 7 + c * 13) % 5) * 4;
+        const size = cellSize + sizeJitter - 8;
+        const left = c * hStep + (r % 2 === 1 ? hStep / 2 : 0);
+        const top = r * vStep;
+        const seed = (r * 31 + c * 17) % 100;
+        result.push({
+          top,
+          left,
+          size,
+          delay: `${(seed % 60) / 10}s`,
+          duration: `${5 + (seed % 40) / 10}s`,
+          pulseDelay: `${((r + c) * 0.35) % 4}s`,
+          pulse: (r + c) % 3 === 0,
+        });
+      }
     }
-  }
+    return result;
+  }, [rows, cols, cellSize, hStep, vStep]);
 
   const width = cols * hStep + cellSize / 2;
   const height = rows * vStep + cellSize / 4;

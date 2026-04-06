@@ -174,8 +174,13 @@ func (o *OrderStore) GetRevenueByDateRange(ctx context.Context, from, to time.Ti
 	if len(result) == 0 {
 		return 0, nil
 	}
-	if v, ok := result[0]["total_revenue"].(float64); ok {
+	switch v := result[0]["total_revenue"].(type) {
+	case float64:
 		return v, nil
+	case int32:
+		return float64(v), nil
+	case int64:
+		return float64(v), nil
 	}
 	return 0, nil
 }
