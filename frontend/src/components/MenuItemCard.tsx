@@ -105,7 +105,7 @@ export function MenuItemCard({
           )}
           <Button
             size="sm"
-            className="bg-orange-500 hover:bg-orange-600 text-white"
+            className="bg-orange-500 hover:bg-orange-600 active:scale-90 transition-transform text-white"
             onClick={handleAdd}
           >
             <Plus className="h-4 w-4" />

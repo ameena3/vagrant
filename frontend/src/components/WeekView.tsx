@@ -79,7 +79,7 @@ export function WeekView({
               className={cn(
                 "flex flex-col items-center gap-1 rounded-lg border-2 p-2 transition-all duration-200",
                 isSelected
-                  ? "border-green-500 bg-green-50 dark:bg-green-900/30 shadow-md animate-bob"
+                  ? "border-green-500 bg-green-50 dark:bg-green-900/30 shadow-md"
                   : "border-border bg-card hover:border-primary/50",
                 isDisabled && "cursor-not-allowed opacity-50",
                 isToday && !isSelected && "ring-2 ring-orange-300 ring-offset-1"

@@ -59,6 +59,7 @@ export default function HomePage() {
   const [changePwConfirm, setChangePwConfirm] = useState("");
   const [changePwError, setChangePwError] = useState("");
   const [changePwLoading, setChangePwLoading] = useState(false);
+  const [cartBump, setCartBump] = useState(false);
 
   useEffect(() => {
     if (session) {
@@ -140,6 +141,8 @@ export default function HomePage() {
 
   function addToCart(item: OrderItem) {
     setCartItems((prev) => [...prev, item]);
+    setCartBump(true);
+    setTimeout(() => setCartBump(false), 450);
   }
 
   function removeFromCart(index: number) {
@@ -260,7 +263,7 @@ export default function HomePage() {
                   size="icon"
                   className="relative border-orange-200 hover:bg-orange-50 dark:border-orange-900/50 dark:hover:bg-orange-900/30"
                 >
-                  <ShoppingCart className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                  <ShoppingCart className={`h-5 w-5 text-orange-600 dark:text-orange-400${cartBump ? " animate-cart-pop" : ""}`} />
                   {cartItems.length > 0 && (
                     <span className="absolute -right-2 -top-2 h-5 w-5">
                       <span className="absolute inset-0 rounded-full bg-orange-400 animate-pulse-ring" />

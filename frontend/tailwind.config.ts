@@ -143,6 +143,12 @@ const config: Config = {
           "0%, 100%": { opacity: "0.25", transform: "scale(1)" },
           "50%": { opacity: "0.6", transform: "scale(1.05)" },
         },
+        "cart-pop": {
+          "0%": { transform: "scale(1)" },
+          "40%": { transform: "scale(1.35)" },
+          "70%": { transform: "scale(0.9)" },
+          "100%": { transform: "scale(1)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -160,6 +166,7 @@ const config: Config = {
         rise: "rise 12s linear infinite",
         "hex-float": "hex-float 7s ease-in-out infinite",
         "hex-pulse": "hex-pulse 4s ease-in-out infinite",
+        "cart-pop": "cart-pop 0.45s ease-out",
       },
     },
   },
