@@ -107,7 +107,7 @@ func (s *analyticssrvc) OrderTrends(ctx context.Context, p *analytics.OrderTrend
 			log.Printf(ctx, "Error parsing to date: %v", err)
 			return nil, err
 		}
-		toTime = t.AddDate(0, 0, 1)
+		toTime = t.AddDate(0, 0, 2) // +2 days to cover UTC offset (users in UTC-N create orders past midnight UTC)
 	} else {
 		toTime = time.Now()
 	}
