@@ -1,6 +1,7 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { useState } from "react";
+import { Plus, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -24,6 +25,8 @@ export function MenuItemCard({
   onAddToCart,
   hidePrices,
 }: MenuItemCardProps) {
+  const [justAdded, setJustAdded] = useState(false);
+
   function handleAdd() {
     onAddToCart({
       date,
@@ -32,6 +35,8 @@ export function MenuItemCard({
       menu_item_name: item.name,
       price: item.price,
     });
+    setJustAdded(true);
+    setTimeout(() => setJustAdded(false), 1200);
   }
 
   // Gradient backgrounds for placeholder images
@@ -105,10 +110,19 @@ export function MenuItemCard({
           )}
           <Button
             size="sm"
-            className="bg-orange-500 hover:bg-orange-600 active:scale-90 transition-transform text-white"
+            className={justAdded
+              ? "bg-green-500 hover:bg-green-600 active:scale-90 transition-transform text-white animate-add-pop gap-1"
+              : "bg-orange-500 hover:bg-orange-600 active:scale-90 transition-transform text-white"}
             onClick={handleAdd}
           >
-            <Plus className="h-4 w-4" />
+            {justAdded ? (
+              <>
+                <Check className="h-4 w-4" />
+                Added
+              </>
+            ) : (
+              <Plus className="h-4 w-4" />
+            )}
           </Button>
         </div>
       </div>

@@ -6,8 +6,8 @@ import { Providers } from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Fresh Kitchen\u2122 - Homemade Meals",
-  description: "Order fresh, homemade meals for the week. Made with love using the freshest ingredients. Fresh Kitchen\u2122 is a trademark of Fresh Kitchen.",
+  title: "Fresh Kitchen™ - Indian Homemade Meals",
+  description: "Order fresh, authentic Indian homemade meals for the week. Made with love using traditional spices and fresh ingredients. Fresh Kitchen™.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

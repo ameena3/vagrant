@@ -36,7 +36,7 @@ function OrderSuccessContent() {
         {[
           { emoji: "🎉", left: "10%", delay: "0s", dur: "9s" },
           { emoji: "✨", left: "22%", delay: "1.2s", dur: "10s" },
-          { emoji: "🥗", left: "35%", delay: "2.4s", dur: "11s" },
+          { emoji: "🍛", left: "35%", delay: "2.4s", dur: "11s" },
           { emoji: "🎊", left: "48%", delay: "0.8s", dur: "9s" },
           { emoji: "✨", left: "62%", delay: "3.1s", dur: "10s" },
           { emoji: "🍃", left: "75%", delay: "1.8s", dur: "12s" },
@@ -79,7 +79,7 @@ function OrderSuccessContent() {
             Your Order Is Confirmed!
           </h2>
           <p className="text-lg text-muted-foreground">
-            Thank you for your order. We'll prepare your fresh meals with care.
+            Thank you for your order. We'll prepare your authentic Indian meals with love and care.
           </p>
         </div>
 
@@ -183,7 +183,7 @@ function OrderSuccessContent() {
 
         <div className="text-center text-sm text-muted-foreground space-y-1">
           <p>Thank you for choosing Fresh Kitchen!</p>
-          <p>We're excited to prepare your meals.</p>
+          <p>We're excited to cook your authentic Indian meals.</p>
         </div>
       </div>
     </div>

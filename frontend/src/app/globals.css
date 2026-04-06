@@ -138,7 +138,9 @@
   .animate-sway,
   .animate-rise,
   .animate-hex-float,
-  .animate-hex-pulse {
+  .animate-hex-pulse,
+  .animate-cart-bump,
+  .animate-add-pop {
     animation: none !important;
   }
 }

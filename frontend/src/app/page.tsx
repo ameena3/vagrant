@@ -201,7 +201,7 @@ export default function HomePage() {
               <span className="text-lg font-bold text-foreground">
                 Fresh Kitchen<sup className="ml-0.5 text-xs font-medium text-muted-foreground">™</sup>
               </span>
-              <span className="text-xs text-muted-foreground">Fresh Homemade Meals</span>
+              <span className="text-xs text-muted-foreground">Authentic Indian Cuisine</span>
             </div>
           </div>
 
@@ -265,9 +265,9 @@ export default function HomePage() {
                 >
                   <ShoppingCart className={`h-5 w-5 text-orange-600 dark:text-orange-400${cartBump ? " animate-cart-pop" : ""}`} />
                   {cartItems.length > 0 && (
-                    <span className="absolute -right-2 -top-2 h-5 w-5">
+                    <span key={cartItems.length} className="absolute -right-2 -top-2 h-5 w-5">
                       <span className="absolute inset-0 rounded-full bg-orange-400 animate-pulse-ring" />
-                      <Badge className="relative h-5 w-5 rounded-full p-0 flex items-center justify-center bg-orange-500 text-white text-xs">
+                      <Badge className="relative h-5 w-5 rounded-full p-0 flex items-center justify-center bg-orange-500 text-white text-xs animate-cart-bump">
                         {cartItems.length}
                       </Badge>
                     </span>
@@ -347,14 +347,14 @@ export default function HomePage() {
           {/* Rising food-emoji particles */}
           <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
             {[
-              { emoji: "🥗", left: "8%", delay: "0s", dur: "11s", size: "text-2xl" },
-              { emoji: "🍅", left: "18%", delay: "2.4s", dur: "13s", size: "text-xl" },
-              { emoji: "🥕", left: "30%", delay: "1.2s", dur: "12s", size: "text-2xl" },
-              { emoji: "🌿", left: "44%", delay: "5.5s", dur: "14s", size: "text-xl" },
-              { emoji: "🍋", left: "58%", delay: "3.7s", dur: "11s", size: "text-2xl" },
-              { emoji: "🥑", left: "72%", delay: "0.8s", dur: "13s", size: "text-xl" },
-              { emoji: "🍞", left: "84%", delay: "4.2s", dur: "12s", size: "text-2xl" },
-              { emoji: "🫐", left: "92%", delay: "6.5s", dur: "14s", size: "text-xl" },
+              { emoji: "🍛", left: "8%",  delay: "0s",   dur: "11s", size: "text-2xl" },
+              { emoji: "🌶️", left: "18%", delay: "2.4s", dur: "13s", size: "text-xl"  },
+              { emoji: "🫓", left: "30%", delay: "1.2s", dur: "12s", size: "text-2xl" },
+              { emoji: "🧅", left: "44%", delay: "5.5s", dur: "14s", size: "text-xl"  },
+              { emoji: "🍵", left: "58%", delay: "3.7s", dur: "11s", size: "text-2xl" },
+              { emoji: "🧄", left: "72%", delay: "0.8s", dur: "13s", size: "text-xl"  },
+              { emoji: "🥘", left: "84%", delay: "4.2s", dur: "12s", size: "text-2xl" },
+              { emoji: "🫚", left: "92%", delay: "6.5s", dur: "14s", size: "text-xl"  },
             ].map((p, i) => (
               <span
                 key={i}
@@ -372,31 +372,30 @@ export default function HomePage() {
 
           <div className="relative z-10 mx-auto max-w-4xl space-y-4 text-center">
             <h1 className="text-3xl font-bold text-foreground sm:text-4xl md:text-5xl">
-              Fresh Homemade Meals,{" "}
+              Authentic Indian Meals,{" "}
               <span className="text-green-600 dark:text-green-400">Made with Love</span>
             </h1>
             <p className="text-xs uppercase tracking-wider text-muted-foreground">
               Fresh Kitchen<sup>™</sup>
             </p>
             <p className="text-lg text-muted-foreground sm:text-xl">
-              Order nutritious, delicious meals prepared fresh for your week.
-              Choose your favorite meals and enjoy them fresh.
+              Order authentic, homemade Indian meals — rich curries, fragrant biryanis, and more — prepared fresh every day.
             </p>
             <div className="flex justify-center gap-2 flex-wrap">
               <Badge className="bg-green-100 text-green-700 border-green-200 dark:bg-green-900/40 dark:text-green-200 dark:border-green-800 animate-sway">
-                🥗 Fresh Ingredients
+                🌶️ Authentic Spices
               </Badge>
               <Badge
                 className="bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-900/40 dark:text-orange-200 dark:border-orange-800 animate-sway"
                 style={{ animationDelay: "1s" }}
               >
-                👨‍🍳 Homemade Quality
+                👨‍🍳 Traditional Recipes
               </Badge>
               <Badge
                 className="bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/40 dark:text-amber-200 dark:border-amber-800 animate-sway"
                 style={{ animationDelay: "2s" }}
               >
-                🌿 Locally Sourced
+                🧄 Fresh Masalas
               </Badge>
             </div>
           </div>
@@ -407,15 +406,15 @@ export default function HomePage() {
           <div className="flex whitespace-nowrap animate-ticker">
             {Array.from({ length: 2 }).map((_, r) => (
               <div key={r} className="flex items-center gap-8 px-4 text-sm text-muted-foreground">
-                <span>🥗 Crisp Greens</span>
-                <span>🍅 Vine Tomatoes</span>
-                <span>🥑 Ripe Avocado</span>
-                <span>🌿 Fresh Herbs</span>
-                <span>🍋 Zesty Citrus</span>
-                <span>🥕 Garden Carrots</span>
-                <span>🍞 Baked Daily</span>
-                <span>🫐 Seasonal Berries</span>
-                <span>🧀 Artisan Cheese</span>
+                <span>🍛 Aromatic Biryani</span>
+                <span>🌶️ Kashmiri Chilli</span>
+                <span>🧅 Golden Onions</span>
+                <span>🧄 Fresh Garlic</span>
+                <span>🫚 Pure Ghee</span>
+                <span>🫓 Warm Roti</span>
+                <span>🥘 Rich Curry</span>
+                <span>🍵 Masala Chai</span>
+                <span>🌿 Curry Leaves</span>
               </div>
             ))}
           </div>
