@@ -18,6 +18,7 @@ type Announcement struct {
 	EndDate   string        `bson:"end_date,omitempty" json:"end_date,omitempty"`
 	CreatedBy string        `bson:"created_by" json:"created_by,omitempty"`
 	CreatedAt time.Time     `bson:"created_at" json:"created_at"`
+	ExpiresAt *time.Time    `bson:"expires_at,omitempty" json:"expires_at,omitempty"`
 }
 
 type AnnouncementStore struct {
@@ -47,8 +48,20 @@ func (a *AnnouncementStore) GetActive(ctx context.Context) ([]Announcement, erro
 	return announcements, nil
 }
 
+func computeAnnouncementExpiry(endDate string) *time.Time {
+	if endDate == "" {
+		return nil
+	}
+	if t, err := time.Parse("2006-01-02", endDate); err == nil {
+		exp := t.AddDate(0, 0, 1)
+		return &exp
+	}
+	return nil
+}
+
 func (a *AnnouncementStore) Create(ctx context.Context, ann *Announcement) (*Announcement, error) {
 	ann.CreatedAt = time.Now()
+	ann.ExpiresAt = computeAnnouncementExpiry(ann.EndDate)
 	result, err := a.col.InsertOne(ctx, ann)
 	if err != nil {
 		return nil, err
@@ -62,9 +75,14 @@ func (a *AnnouncementStore) Update(ctx context.Context, id string, ann *Announce
 	if err != nil {
 		return nil, err
 	}
+	ann.ExpiresAt = computeAnnouncementExpiry(ann.EndDate)
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+	update := bson.M{"$set": ann}
+	if ann.ExpiresAt == nil {
+		update["$unset"] = bson.M{"expires_at": ""}
+	}
 	var result Announcement
-	err = a.col.FindOneAndUpdate(ctx, bson.M{"_id": objID}, bson.M{"$set": ann}, opts).Decode(&result)
+	err = a.col.FindOneAndUpdate(ctx, bson.M{"_id": objID}, update, opts).Decode(&result)
 	if err != nil {
 		return nil, err
 	}

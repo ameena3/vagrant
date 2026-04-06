@@ -27,6 +27,10 @@ db.schedule.createIndex({ date: 1 }, { unique: true });
 // Create indexes for announcements collection
 db.announcements.createIndex({ active: 1, end_date: 1 });
 
+// TTL indexes for automatic cleanup
+db.menus.createIndex({ expires_at: 1 }, { expireAfterSeconds: 0 });
+db.announcements.createIndex({ expires_at: 1 }, { expireAfterSeconds: 0 });
+
 // Insert default settings
 db.settings.insertOne({
   key: 'weekends_enabled',
