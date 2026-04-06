@@ -27,9 +27,10 @@ const RevenueChart = dynamic(
   { ssr: false, loading: () => <Skeleton className="h-64 w-full" /> }
 );
 
-function getMonthStart() {
-  const now = new Date();
-  return localDateStr(new Date(now.getFullYear(), now.getMonth(), 1));
+function get30DaysAgo() {
+  const d = new Date();
+  d.setDate(d.getDate() - 30);
+  return localDateStr(d);
 }
 
 function getToday() {
@@ -43,7 +44,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [trendsLoading, setTrendsLoading] = useState(false);
 
-  const [fromDate, setFromDate] = useState(getMonthStart());
+  const [fromDate, setFromDate] = useState(get30DaysAgo());
   const [toDate, setToDate] = useState(getToday());
 
   useEffect(() => {
