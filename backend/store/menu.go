@@ -31,6 +31,7 @@ type Menu struct {
 	Enabled   bool          `bson:"enabled" json:"enabled"`
 	CreatedBy string        `bson:"created_by" json:"created_by,omitempty"`
 	UpdatedAt time.Time     `bson:"updated_at" json:"updated_at"`
+	ExpiresAt time.Time     `bson:"expires_at,omitempty" json:"expires_at,omitempty"`
 }
 
 type MenuStore struct {
@@ -68,6 +69,11 @@ func (m *MenuStore) Upsert(ctx context.Context, menu *Menu) (*Menu, error) {
 		"day_of_week": menu.DayOfWeek,
 	}
 	menu.UpdatedAt = time.Now()
+
+	// Set TTL expiry: menu expires 14 days after week_start (keeps current + last week)
+	if ws, err := time.Parse("2006-01-02", menu.WeekStart); err == nil {
+		menu.ExpiresAt = ws.AddDate(0, 0, 14)
+	}
 
 	opts := options.FindOneAndUpdate().
 		SetUpsert(true).
